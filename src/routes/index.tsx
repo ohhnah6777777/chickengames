@@ -53,7 +53,7 @@ function Index() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
         {list.map(({ id: g, icon }) => (
           <button key={g} onClick={() => setPlaying(g)} className="group text-left">
-            <div className="aspect-square overflow-hidden rounded-lg border border-border bg-card transition group-hover:-translate-y-1 group-hover:border-primary">
+            <div className="aspect-square overflow-hidden rounded-lg border border-border bg-card transition group-hover:-translate-y-1 hover:rotate-1 group-hover:border-primary">
               <Icon name={g} icon={icon} />
             </div>
             <p className="mt-2 truncate text-sm text-muted-foreground group-hover:text-foreground">{pretty(g)}</p>
