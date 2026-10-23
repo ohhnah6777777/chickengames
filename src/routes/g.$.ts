@@ -17,8 +17,17 @@ export const Route = createFileRoute("/g/$")({
       GET: async ({ params }) => {
         let path = params._splat ?? "";
         if (!path || path.endsWith("/")) path += "index.html";
-        const upstream = await fetch(RAW + path.split("/").map(encodeURIComponent).join("/"));
-        if (!upstream.ok) return new Response("Not found", { status: 404 });
+        const url = RAW + path.split("/").map(encodeURIComponent).join("/");
+        let upstream = await fetch(url);
+        for (let i = 0; i < 3 && upstream.status === 429; i++) {
+          await new Promise((r) => setTimeout(r, 800 * (i + 1)));
+          upstream = await fetch(url);
+        }
+        if (!upstream.ok)
+          return new Response(
+            upstream.status === 429 ? "The game library is busy right now. Please try again in a minute." : "Not found",
+            { status: upstream.status },
+          );
         const ext = path.split(".").pop()?.toLowerCase() ?? "";
         return new Response(upstream.body, {
           headers: {

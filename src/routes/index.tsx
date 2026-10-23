@@ -19,7 +19,8 @@ export const Route = createFileRoute("/")({
 const pretty = (s: string) => s.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
 function Icon({ name }: { name: string }) {
-  const srcs = [`/g/${name}/thumb.png`, `/g/${name}/${name}.png`, `/g/${name}/icon.png`, `/g/${name}/favicon.ico`];
+  const base = `https://gitlab.com/3kh0/3kh0-assets/-/raw/main/${encodeURIComponent(name)}/`;
+  const srcs = [base + "thumb.png", base + encodeURIComponent(name) + ".png"];
   const [i, setI] = useState(0);
   if (i >= srcs.length)
     return <div className="flex h-full w-full items-center justify-center font-display text-3xl text-primary">{name[0]?.toUpperCase()}</div>;
