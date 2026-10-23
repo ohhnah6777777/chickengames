@@ -38,7 +38,7 @@ function Index() {
           <button onClick={() => setPlaying(null)} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground">← Back</button>
           <h2 className="font-display text-xl">{pretty(playing)}</h2>
         </div>
-        <iframe src={`/g/${playing}/`} title={playing} className="w-full flex-1 border-0" allowFullScreen />
+        <iframe src={`/g/${playing}/index.html`} title={playing} className="w-full flex-1 border-0" allowFullScreen />
       </div>
     );
 
