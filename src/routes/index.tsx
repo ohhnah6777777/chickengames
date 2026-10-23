@@ -1,24 +1,64 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import games from "@/lib/games.json";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Arcade — Free Browser Games" },
+      { name: "description", content: "A simple collection of browser games you can play instantly." },
+      { property: "og:title", content: "Arcade — Free Browser Games" },
+      { property: "og:description", content: "A simple collection of browser games you can play instantly." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+const pretty = (s: string) => s.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+function Icon({ name }: { name: string }) {
+  const srcs = [`/g/${name}/thumb.png`, `/g/${name}/${name}.png`, `/g/${name}/icon.png`, `/g/${name}/favicon.ico`];
+  const [i, setI] = useState(0);
+  if (i >= srcs.length)
+    return <div className="flex h-full w-full items-center justify-center font-display text-3xl text-primary">{name[0]?.toUpperCase()}</div>;
+  return <img src={srcs[i]} alt="" loading="lazy" onError={() => setI(i + 1)} className="h-full w-full object-cover" />;
+}
+
 function Index() {
+  const [q, setQ] = useState("");
+  const [playing, setPlaying] = useState<string | null>(null);
+  const list = (games as string[]).filter((g) => g.toLowerCase().includes(q.toLowerCase()));
+
+  if (playing)
+    return (
+      <div className="flex h-screen flex-col bg-background">
+        <div className="flex items-center gap-4 border-b border-border px-4 py-3">
+          <button onClick={() => setPlaying(null)} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground">← Back</button>
+          <h2 className="font-display text-xl">{pretty(playing)}</h2>
+        </div>
+        <iframe src={`/g/${playing}/index.html`} title={playing} className="w-full flex-1 border-0" allowFullScreen />
+      </div>
+    );
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="mx-auto min-h-screen max-w-6xl px-4 py-10">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <h1 className="font-display text-5xl text-primary">ARCADE</h1>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${games.length} games…`}
+          className="w-full rounded-md border border-input bg-card px-4 py-2 outline-none focus:ring-2 focus:ring-ring sm:w-72" />
+      </header>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+        {list.map((g) => (
+          <button key={g} onClick={() => setPlaying(g)} className="group text-left">
+            <div className="aspect-square overflow-hidden rounded-lg border border-border bg-card transition group-hover:-translate-y-1 group-hover:border-primary">
+              <Icon name={g} />
+            </div>
+            <p className="mt-2 truncate text-sm text-muted-foreground group-hover:text-foreground">{pretty(g)}</p>
+          </button>
+        ))}
+      </div>
+    </main>
   );
 }
