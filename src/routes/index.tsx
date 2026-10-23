@@ -87,7 +87,7 @@ function Index() {
       <div className="mb-6 flex flex-wrap gap-2">
         <button onClick={() => setOnlyLiked(false)} className={`${btn} ${!onlyLiked ? "bg-primary text-primary-foreground" : "bg-card"}`}>All games</button>
         <button onClick={() => setOnlyLiked(true)} className={`${btn} ${onlyLiked ? "bg-primary text-primary-foreground" : "bg-card"}`}>♥ Liked ({likes.length})</button>
-        <button onClick={() => setPlaying(games[Math.floor(Math.random() * games.length)].id)} className={`${btn} bg-secondary`}>🎲 Random game</button>
+        <button onClick={() => setPlaying(games[Math.floor(Math.random() * games.length)]?.id ?? null)} className={`${btn} bg-secondary`}>🎲 Random game</button>
       </div>
       {list.length === 0 && <p className="text-muted-foreground">{onlyLiked ? "No liked games yet — tap ♡ on any game." : "No games found."}</p>}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
