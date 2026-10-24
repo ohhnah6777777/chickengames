@@ -143,3 +143,19 @@
     font-family: var(--font-sans);
   }
 }
+
+.chicken-pattern {
+  position: fixed;
+  inset: -180px;
+  z-index: -1;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(20, 100px);
+  grid-auto-rows: 140px;
+  gap: 35px;
+  transform: rotate(-25deg);
+  opacity: 0.5;
+}
+.chicken-pattern img { width: 85px; height: 125px; object-fit: contain; }
+body { isolation: isolate; }
+.account-input { width: 100%; min-width: 0; border: 2px solid var(--input); background: var(--card); border-radius: var(--radius); padding: 8px 12px; outline-color: var(--ring); }

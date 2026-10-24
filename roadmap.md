@@ -1,0 +1,4 @@
+- [ ] Add saved profiles and optional account menu with login/signup/reset.
+- [ ] Keep 3kh0 public; unlock LuminSDK for signed-in accounts in settings.
+- [ ] Add half-transparent diagonal chicken background and reference-style game player.
+- [ ] Test guest and signed-in flows.
