@@ -14,7 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          liked_games: string[]
+          lumin_enabled: boolean
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id: string
+          liked_games?: string[]
+          lumin_enabled?: boolean
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          liked_games?: string[]
+          lumin_enabled?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
