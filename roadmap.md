@@ -1,4 +1,6 @@
-- [ ] Add saved profiles and optional account menu with login/signup/reset.
-- [ ] Keep 3kh0 public; unlock LuminSDK for signed-in accounts in settings.
-- [ ] Add half-transparent diagonal chicken background and reference-style game player.
-- [ ] Test guest and signed-in flows.
+- [x] Add saved profiles and optional account menu with login/signup/reset.
+- [x] Keep 3kh0 public; unlock the LuminSDK setting for signed-in accounts.
+- [x] Add half-transparent diagonal chicken background and reference-style game player.
+- [x] Test guest browsing, locked LuminSDK, signup validation, mobile layout, and 2048 player; access-rule tests pass.
+- [ ] Complete LuminSDK loading: its SDK rejects an isolated frame; needs a separate trusted embed host to preserve account security.
+- [ ] Verify saved profiles and likes through a signed-in session: no registered account exists yet; email confirmation is required.
