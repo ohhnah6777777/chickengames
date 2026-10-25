@@ -1,13 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import gamesData from "@/lib/games.json";
-import { ArrowLeft, Heart, Maximize, RotateCw, Shuffle, Lock } from 'lucide-react';
+import { ArrowLeft, Heart, Maximize, RotateCw, Shuffle, Search, Grid2X2, Puzzle, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AccountMenu } from '@/components/account-menu';
 import { useAccount } from '@/components/account-provider';
-import { ChickenBackground } from '@/components/chicken-background';
-import { LuminLibrary } from '@/components/lumin-library';
-import { canAccessSource } from '@/lib/game-access';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -55,84 +52,54 @@ function useLikes() {
   return { likes, toggle, error };
 }
 
-const btn = "rounded-md border-2 border-foreground px-3 py-1.5 text-sm font-bold transition hover:-translate-y-0.5";
-
 function Index() {
-  const { user, profile } = useAccount();
-  const [source, setSource] = useState<'3kh0' | 'lumin'>('3kh0');
-  const [q, setQ] = useState("");
-  const [onlyLiked, setOnlyLiked] = useState(false);
+  const [q, setQ] = useState('');
+  const [view, setView] = useState<'home' | 'all' | 'liked' | 'puzzle' | 'arcade'>('home');
   const [playing, setPlaying] = useState<string | null>(null);
   const { likes, toggle, error } = useLikes();
-  const frame = useRef<HTMLIFrameElement>(null);
   const player = useRef<HTMLDivElement>(null);
   const [reload, setReload] = useState(0);
   const [playerError, setPlayerError] = useState('');
-  const luminAvailable = canAccessSource('lumin', user?.id ?? null) && Boolean(profile?.lumin_enabled);
-  const activeSource = luminAvailable ? source : '3kh0';
-  const fullscreen = async () => {
-    try { await player.current?.requestFullscreen(); } catch { setPlayerError('Fullscreen is not available in this browser.'); }
-  };
-
-  const list = games.filter((g) => g.id.toLowerCase().includes(q.toLowerCase()) && (!onlyLiked || likes.includes(g.id)));
-
-  if (playing) {
-    const liked = likes.includes(playing);
-    return (
-      <main className="mx-auto min-h-screen max-w-7xl px-4 py-5">
-        <ChickenBackground />
-        <header className="mb-5 flex items-center gap-3"><Button variant="outline" size="icon" aria-label="Back to games" title="Back to games" onClick={() => setPlaying(null)}><ArrowLeft /></Button><p className="mr-auto font-bold text-primary">CHICKEN GAMES</p><AccountMenu /></header>
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_180px]">
-          <section className="min-w-0">
-            <div ref={player} className="flex h-[65dvh] min-h-[320px] flex-col overflow-hidden rounded-lg border-2 border-border bg-card sm:h-auto sm:aspect-video">
-              <iframe key={`${playing}-${reload}`} ref={frame} src={`/g/${playing}/index.html`} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
-            </div>
-            <div className="flex flex-wrap items-center gap-2 border-b-2 border-border bg-card px-3 py-3"><h1 className="mr-auto min-w-0 break-words text-lg font-bold">{pretty(playing)}</h1><Button variant={liked ? 'default' : 'outline'} size="icon" aria-label={liked ? 'Unlike game' : 'Like game'} title={liked ? 'Unlike game' : 'Like game'} onClick={() => toggle(playing)}><Heart fill={liked ? 'currentColor' : 'none'} /></Button><Button variant="outline" size="icon" aria-label="Reload game" title="Reload game" onClick={() => setReload(n => n + 1)}><RotateCw /></Button><Button variant="secondary" size="icon" aria-label="Fullscreen" title="Fullscreen" onClick={() => void fullscreen()}><Maximize /></Button></div>
-            {(error || playerError) && <p role="status" className="bg-card p-2 text-sm text-primary">{error || playerError}</p>}
-            <h2 className="my-5 font-bold">More games</h2>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">{games.filter(g => g.id !== playing).slice(0, 18).map(g => <Button key={g.id} variant="ghost" className="block h-auto p-0 text-left" onClick={() => { setPlaying(g.id); setPlayerError(''); }}><div className="aspect-square overflow-hidden rounded-lg border-2 border-border"><Icon game={g} /></div><p className="mt-1 truncate text-xs">{pretty(g.id)}</p></Button>)}</div>
-          </section>
-          <aside className="hidden lg:block"><h2 className="mb-3 font-bold">Liked games</h2><div className="grid gap-3">{games.filter(g => likes.includes(g.id)).slice(0, 6).map(g => <Button key={g.id} variant="ghost" className="h-auto flex-col p-0" onClick={() => setPlaying(g.id)}><div className="aspect-square w-full overflow-hidden rounded-lg border-2 border-border"><Icon game={g} /></div><span className="max-w-full truncate text-xs">{pretty(g.id)}</span></Button>)}</div>{likes.length === 0 && <p className="bg-card p-2 text-sm text-muted-foreground">No liked games yet.</p>}</aside>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main className="mx-auto min-h-screen max-w-6xl px-4 py-10">
-      <ChickenBackground />
-      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center justify-between gap-3"><h1 className="flex min-w-0 items-center gap-3 font-display text-lg text-primary sm:text-3xl">
-          <img src="/favicon.png" alt="" width={48} height={48} className="h-12 w-12 [image-rendering:pixelated]" />
-          CHICKEN GAMES
-        </h1><AccountMenu /></div>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${games.length} games…`}
-          className="w-full rounded-md border-2 border-input bg-card px-4 py-2 outline-none focus:ring-2 focus:ring-ring sm:w-72" />
-      </header>
-      <div className="mb-6 flex flex-wrap gap-2">
-        <Button onClick={() => { setOnlyLiked(false); setSource('3kh0'); }} className={btn} variant={!onlyLiked && activeSource === '3kh0' ? 'default' : 'outline'}>3kh0 games</Button>
-        <Button onClick={() => { setOnlyLiked(true); setSource('3kh0'); }} className={btn} variant={onlyLiked ? 'default' : 'outline'}><Heart />Liked ({likes.length})</Button>
-        <Button onClick={() => setPlaying(games[Math.floor(Math.random() * games.length)]?.id ?? null)} className={btn} variant="secondary"><Shuffle />Random game</Button>
-        <Button onClick={() => setSource('lumin')} disabled={!luminAvailable} title={user ? 'Enable LuminSDK in account settings' : 'Create an account to unlock LuminSDK'} className={btn} variant={activeSource === 'lumin' ? 'default' : 'outline'}>{!luminAvailable && <Lock />}LuminSDK</Button>
-      </div>
-      {error && <p role="status" className="mb-3 bg-card p-2 text-sm text-primary">{error}</p>}
-      {activeSource === 'lumin' ? <LuminLibrary /> : <>
-      {list.length === 0 && <p className="text-muted-foreground">{onlyLiked ? "No liked games yet — tap ♡ on any game." : "No games found."}</p>}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
-        {list.map((g) => (
-          <div key={g.id} className="group relative">
-            <Button variant="ghost" onClick={() => setPlaying(g.id)} className="block h-auto w-full whitespace-normal p-0 text-left">
-              <div className="aspect-square overflow-hidden rounded-lg border-2 border-border bg-card transition group-hover:-translate-y-1 group-hover:border-primary">
-                <Icon game={g} />
-              </div>
-              <p className="mt-2 truncate text-sm text-muted-foreground group-hover:text-foreground">{pretty(g.id)}</p>
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => toggle(g.id)} aria-label={likes.includes(g.id) ? `Unlike ${pretty(g.id)}` : `Like ${pretty(g.id)}`} title="Like game"
-              className="absolute right-2 top-2 size-8 rounded-full bg-card text-primary shadow"><Heart fill={likes.includes(g.id) ? 'currentColor' : 'none'} /></Button>
-          </div>
-        ))}
-      </div>
-      </>}
+  const puzzle = games.filter(g => /2048|tetris|chess|sudoku|word|minesweep|connect|solitaire|mahjong|puzzle|hextris/.test(g.id));
+  const arcade = games.filter(g => /slope|run|jump|dash|flappy|snake|pacman|ball|retro|doodle/.test(g.id));
+  const picks = ['slope','2048','minecraft','retro-bowl','run-3','cookie-clicker','basketball-stars','subway-surfers','geometry-dash','bitlife','flappy-bird','tetris'].flatMap(id => games.filter(g => g.id === id));
+  const start = (id: string) => { setPlaying(id); setPlayerError(''); };
+  const tiles = (items: Game[]) => <div className="game-grid">{items.map(g => <div key={g.id} className="game-tile group">
+    <Button variant="ghost" aria-label={pretty(g.id)} title={pretty(g.id)} onClick={() => start(g.id)} className="relative block h-auto w-full overflow-hidden rounded-md p-0">
+      <div className="aspect-square w-full bg-card"><Icon game={g} /></div><span className="tile-name truncate">{pretty(g.id)}</span>
+    </Button>
+    <Button variant="secondary" size="icon" aria-label={`${likes.includes(g.id) ? 'Unlike' : 'Like'} ${pretty(g.id)}`} title="Like game" onClick={() => toggle(g.id)} className="absolute right-1 top-1 size-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"><Heart className="size-3" fill={likes.includes(g.id) ? 'currentColor' : 'none'} /></Button>
+  </div>)}</div>;
+  const shelf = (title: string, items: Game[], target: typeof view) => <section className="mb-6"><div className="mb-2 flex items-center gap-3"><h2 className="text-sm font-bold">{title}</h2><Button variant="link" className="h-auto p-0 text-xs text-primary" onClick={() => setView(target)}>View more ›</Button></div>{tiles(items)}</section>;
+  const base = view === 'liked' ? games.filter(g => likes.includes(g.id)) : view === 'puzzle' ? puzzle : view === 'arcade' ? arcade : games;
+  const list = base.filter(g => pretty(g.id).toLowerCase().includes(q.toLowerCase()));
+  return <>
+    <header className="border-b border-border bg-background"><div className="library-shell flex flex-wrap items-center gap-3 py-3">
+      {playing && <Button variant="ghost" size="icon" aria-label="Back to games" title="Back to games" onClick={() => setPlaying(null)}><ArrowLeft /></Button>}
+      <Button variant="ghost" className="mr-auto h-auto gap-2 p-0" onClick={() => { setPlaying(null); setView('home'); setQ(''); }}><img src="/favicon.png" alt="" width={36} height={36} className="size-9 [image-rendering:pixelated]" /><span className="text-lg font-black text-primary">CHICKEN GAMES</span></Button>
+      <div className="flex min-w-0 items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 max-sm:order-last max-sm:w-full"><Search className="size-4 shrink-0 text-muted-foreground" /><input aria-label="Search games" placeholder="Search games…" value={q} onChange={e => { setQ(e.target.value); setPlaying(null); }} className="w-44 min-w-0 bg-transparent text-xs outline-none max-sm:w-full" /></div>
+      <Button variant="ghost" size="icon" aria-label="Liked games" title="Liked games" onClick={() => { setPlaying(null); setView('liked'); }}><Heart /></Button><AccountMenu />
+    </div></header>
+    <nav className="border-b border-border bg-card"><div className="library-shell flex flex-wrap items-center gap-1 py-1">
+      {([{id:'home', label:'Home', icon:Grid2X2}, {id:'all',label:'All games',icon:Grid2X2}, {id:'puzzle',label:'Puzzle',icon:Puzzle}, {id:'arcade',label:'Arcade',icon:Zap}] as const).map(item => <Button key={item.id} variant="ghost" className={`h-9 rounded-none px-3 text-xs ${view === item.id ? 'text-primary' : 'text-muted-foreground'}`} onClick={() => { setView(item.id); setPlaying(null); setQ(''); }}><item.icon className="size-4" />{item.label}</Button>)}
+      <Button variant="ghost" className="h-9 px-3 text-xs" onClick={() => start(games[Math.floor(Math.random()*games.length)]?.id ?? '2048')}><Shuffle className="size-4 text-accent" />Random</Button>
+    </div></nav>
+    <main className="library-shell py-5">
+      {error && <p role="status" className="mb-3 text-sm text-primary">{error}</p>}
+      {playing ? <>
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_190px]">
+          <section className="min-w-0"><div ref={player} className="flex aspect-video min-h-[340px] flex-col overflow-hidden rounded-md bg-card max-sm:h-[65dvh]">
+            <iframe key={`${playing}-${reload}`} src={`/g/${playing}/index.html`} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
+          </div><div className="flex flex-wrap items-center gap-2 bg-card px-3 py-3"><h1 className="mr-auto min-w-0 break-words text-lg font-bold">{pretty(playing)}</h1><Button variant="ghost" size="icon" aria-label={likes.includes(playing) ? 'Unlike game' : 'Like game'} title="Like game" onClick={() => toggle(playing)}><Heart fill={likes.includes(playing) ? 'currentColor' : 'none'} /></Button><Button variant="ghost" size="icon" aria-label="Reload game" title="Reload game" onClick={() => setReload(n => n+1)}><RotateCw /></Button><Button variant="secondary" size="icon" aria-label="Fullscreen" title="Fullscreen" onClick={() => { void player.current?.requestFullscreen().catch(() => setPlayerError('Fullscreen is not available in this browser.')); }}><Maximize /></Button></div>{playerError && <p role="status">{playerError}</p>}</section>
+          <aside className="hidden lg:block"><h2 className="mb-2 text-sm font-bold">More games</h2><div className="grid grid-cols-2 gap-2">{picks.filter(g => g.id !== playing).slice(0,12).map(g => <Button key={g.id} variant="ghost" title={pretty(g.id)} aria-label={pretty(g.id)} className="h-auto overflow-hidden rounded-md p-0" onClick={() => start(g.id)}><div className="aspect-square w-full"><Icon game={g} /></div></Button>)}</div></aside>
+        </div><div className="mt-6">{shelf('More games',games.filter(g => g.id !== playing).slice(0,24),'all')}</div>
+      </> : view === 'home' && !q ? <>
+        {shelf('Chicken picks',picks,'all')}
+        {shelf('Arcade games',arcade.slice(0,24),'arcade')}
+        {shelf('Puzzle games',puzzle.slice(0,24),'puzzle')}
+        {shelf('All games',games,'all')}
+      </> : <section><h1 className="mb-3 text-base font-bold">{q ? 'Search results' : view === 'liked' ? `Liked games (${likes.length})` : view === 'puzzle' ? 'Puzzle games' : view === 'arcade' ? 'Arcade games' : 'All games'}</h1>{list.length ? tiles(list) : <p className="text-sm text-muted-foreground">{view === 'liked' ? 'No liked games yet.' : 'No games found.'}</p>}</section>}
     </main>
-  );
+    <footer className="library-shell border-t border-border py-5 text-xs text-muted-foreground">Chicken Games</footer>
+  </>;
 }
