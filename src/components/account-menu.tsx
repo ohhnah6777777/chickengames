@@ -1,8 +1,7 @@
 import { useState, type FormEvent } from 'react';
-import { UserCircle, Lock, Settings, LogOut, Save } from 'lucide-react';
+import { UserCircle, LogOut, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
 import { useAccount } from './account-provider';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
@@ -68,10 +67,6 @@ export function AccountMenu() {
         </form>}
         {user && <form className="flex items-end gap-2" onSubmit={e => { e.preventDefault(); void run(() => saveProfile({ display_name: name.trim() || 'Player' })); }}><label className="grid min-w-0 flex-1 gap-1 text-sm">Display name<input className="account-input" value={name} maxLength={50} required onChange={e => setName(e.target.value)} /></label><Button type="submit" size="icon" aria-label="Save profile" title="Save profile" disabled={busy}><Save /></Button></form>}
         {message && <p role="status" className="break-words text-sm text-primary">{message}</p>}
-        <section className="border-t-2 border-border pt-4">
-          <h3 className="mb-4 flex items-center gap-2 font-bold"><Settings className="size-4" />Settings</h3>
-          <div className="flex items-center justify-between gap-4"><div><label htmlFor="lumin-switch" className="flex items-center gap-2 font-bold">LuminSDK {!user && <Lock className="size-4" />}</label><p className="mt-1 text-xs text-muted-foreground">{user ? 'Extra game collection' : 'Create an account to unlock'}</p></div><Switch id="lumin-switch" checked={Boolean(user && profile?.lumin_enabled)} disabled={!user || !profile || busy} onCheckedChange={checked => void run(() => saveProfile({ lumin_enabled: checked }))} /></div>
-        </section>
       </DialogContent>
     </Dialog>
   </>;
