@@ -20,7 +20,7 @@
 
 @theme inline {
   --font-display: "Press Start 2P", monospace;
-  --font-sans: "Space Mono", monospace;
+  --font-sans: Arial, Helvetica, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -65,23 +65,23 @@
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(0.97 0.04 90);
-  --foreground: oklch(0.25 0.05 40);
-  --card: oklch(1 0.02 90);
-  --card-foreground: oklch(0.25 0.05 40);
-  --popover: oklch(1 0.02 90);
-  --popover-foreground: oklch(0.25 0.05 40);
-  --primary: oklch(0.58 0.21 28);
-  --primary-foreground: oklch(0.98 0.02 90);
-  --secondary: oklch(0.86 0.15 90);
-  --secondary-foreground: oklch(0.25 0.05 40);
-  --muted: oklch(0.92 0.06 90);
-  --muted-foreground: oklch(0.5 0.06 50);
-  --accent: oklch(0.86 0.15 90);
-  --accent-foreground: oklch(0.25 0.05 40);
-  --border: oklch(0.85 0.1 85);
-  --input: oklch(0.85 0.1 85);
-  --ring: oklch(0.8 0.17 85);
+  --background: oklch(0.245 0.003 260);
+  --foreground: oklch(0.96 0.003 90);
+  --card: oklch(0.30 0.004 260);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.86 0.16 90);
+  --primary-foreground: oklch(0.20 0.003 260);
+  --secondary: oklch(0.34 0.004 260);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--card);
+  --muted-foreground: oklch(0.72 0.004 260);
+  --accent: oklch(0.68 0.18 28);
+  --accent-foreground: var(--foreground);
+  --border: oklch(0.40 0.004 260);
+  --input: var(--border);
+  --ring: var(--primary);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -159,3 +159,13 @@
 .chicken-pattern img { width: 85px; height: 125px; object-fit: contain; }
 body { isolation: isolate; }
 .account-input { width: 100%; min-width: 0; border: 2px solid var(--input); background: var(--card); border-radius: var(--radius); padding: 8px 12px; outline-color: var(--ring); }
+
+.library-shell { width: min(1160px, 100%); margin-inline: auto; padding-inline: 18px; }
+.game-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 7px; }
+.game-tile { position: relative; min-width: 0; }
+.game-tile .tile-name { position: absolute; inset: auto 0 0; padding: 6px; background: var(--card); color: var(--foreground); font-size: 11px; opacity: 0; transition: opacity 150ms; }
+.game-tile:hover .tile-name, .game-tile:focus-within .tile-name { opacity: 1; }
+@media (max-width: 1000px) { .game-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .game-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .game-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .library-shell { padding-inline: 12px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
