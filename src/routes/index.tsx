@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import gamesData from "@/lib/games.json";
-import { ArrowLeft, Heart, Maximize, RotateCw, Shuffle, Search, Grid2X2, Puzzle, Zap } from 'lucide-react';
+import { gameInfo, gameUrl, isTrending, pretty, tagsFor, type Game } from "@/lib/game-utils";
+import { ArrowLeft, Clock, Flame, Heart, Info, Maximize, RotateCw, Shuffle, Search, Grid2X2, Puzzle, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AccountMenu } from '@/components/account-menu';
 import { useAccount } from '@/components/account-provider';
@@ -20,9 +21,8 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Game = { id: string; icon: boolean };
 const games = gamesData as Game[];
-const pretty = (s: string) => s.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+const byId = new Map(games.map((g) => [g.id, g]));
 
 function Icon({ game }: { game: Game }) {
   const [bad, setBad] = useState(false);
@@ -32,46 +32,65 @@ function Icon({ game }: { game: Game }) {
         {game.id[0]?.toUpperCase()}
       </div>
     );
-  return <img src={`/icons/${game.id}.webp`} alt="" loading="lazy" width={160} height={160} onError={() => setBad(true)} className="h-full w-full object-cover" />;
+  const src = game.src === "gh" ? `/icons-o/${game.id}.webp` : `/icons/${game.id}.webp`;
+  return <img src={src} alt="" loading="lazy" width={160} height={160} onError={() => setBad(true)} className="h-full w-full object-cover" />;
+}
+
+function useLocalList(key: string) {
+  const [list, setList] = useState<string[]>([]);
+  useEffect(() => {
+    try { const stored = JSON.parse(localStorage.getItem(key) || "[]"); if (Array.isArray(stored)) setList(stored.filter(x => typeof x === 'string')); } catch { /* ignore */ }
+  }, [key]);
+  const save = (next: string[]) => { setList(next); try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* ignore */ } };
+  return [list, save] as const;
 }
 
 function useLikes() {
   const { user, profile, saveProfile } = useAccount();
-  const [localLikes, setLocalLikes] = useState<string[]>([]);
+  const [localLikes, saveLocal] = useLocalList("cg-likes");
   const [error, setError] = useState('');
-  useEffect(() => {
-    try { const stored = JSON.parse(localStorage.getItem("cg-likes") || "[]"); if (Array.isArray(stored)) setLocalLikes(stored.filter(x => typeof x === 'string')); } catch { /* ignore */ }
-  }, []);
   const likes = user ? profile?.liked_games ?? [] : localLikes;
   const toggle = (id: string) => {
     const next = likes.includes(id) ? likes.filter(x => x !== id) : [...likes, id];
     setError('');
     if (user) { void saveProfile({ liked_games: next }).catch(() => setError('Could not save your like. Please try again.')); }
-    else { setLocalLikes(next); try { localStorage.setItem('cg-likes', JSON.stringify(next)); } catch { setError('Your browser could not save this like.'); } }
+    else saveLocal(next);
   };
   return { likes, toggle, error };
 }
 
+const RECENT_KEY = "cg-recent";
+
 function Index() {
   const [q, setQ] = useState('');
-  const [view, setView] = useState<'home' | 'all' | 'liked' | 'puzzle' | 'arcade'>('home');
+  const [view, setView] = useState<'home' | 'all' | 'liked' | 'recent' | 'trending' | 'puzzle' | 'arcade'>('home');
   const [playing, setPlaying] = useState<string | null>(null);
   const { likes, toggle, error } = useLikes();
+  const [recent, saveRecent] = useLocalList(RECENT_KEY);
   const player = useRef<HTMLDivElement>(null);
   const [reload, setReload] = useState(0);
   const [playerError, setPlayerError] = useState('');
-  const puzzle = games.filter(g => /2048|tetris|chess|sudoku|word|minesweep|connect|solitaire|mahjong|puzzle|hextris/.test(g.id));
-  const arcade = games.filter(g => /slope|run|jump|dash|flappy|snake|pacman|ball|retro|doodle/.test(g.id));
+  const puzzle = games.filter(g => tagsFor(g.id).includes('Puzzle'));
+  const arcade = games.filter(g => tagsFor(g.id).includes('Arcade'));
+  const trending = games.filter(g => isTrending(g.id));
+  const recentGames = recent.flatMap(id => { const g = byId.get(id); return g ? [g] : []; });
   const picks = ['slope','2048','minecraft','retro-bowl','run-3','cookie-clicker','basketball-stars','subway-surfers','geometry-dash','bitlife','flappy-bird','tetris'].flatMap(id => games.filter(g => g.id === id));
-  const start = (id: string) => { setPlaying(id); setPlayerError(''); };
+  const start = (id: string) => {
+    setPlaying(id);
+    setPlayerError('');
+    saveRecent([id, ...recent.filter(x => x !== id)].slice(0, 24));
+  };
+  const playingGame = playing ? byId.get(playing) : undefined;
   const tiles = (items: Game[]) => <div className="game-grid">{items.map(g => <div key={g.id} className="game-tile group">
     <Button variant="ghost" aria-label={pretty(g.id)} title={pretty(g.id)} onClick={() => start(g.id)} className="relative block h-auto w-full overflow-hidden rounded-md p-0">
-      <div className="aspect-square w-full bg-card"><Icon game={g} /></div><span className="tile-name truncate">{pretty(g.id)}</span>
+      <div className="aspect-square w-full bg-card"><Icon game={g} /></div>
+      {isTrending(g.id) && <span className="tile-badge"><Flame className="size-2.5" />Trending</span>}
+      <span className="tile-name truncate">{pretty(g.id)}</span>
     </Button>
     <Button variant="secondary" size="icon" aria-label={`${likes.includes(g.id) ? 'Unlike' : 'Like'} ${pretty(g.id)}`} title="Like game" onClick={() => toggle(g.id)} className="absolute right-1 top-1 size-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"><Heart className="size-3" fill={likes.includes(g.id) ? 'currentColor' : 'none'} /></Button>
   </div>)}</div>;
   const shelf = (title: string, items: Game[], target: typeof view) => <section className="mb-6"><div className="mb-2 flex items-center gap-3"><h2 className="text-sm font-bold">{title}</h2><Button variant="link" className="h-auto p-0 text-xs text-primary" onClick={() => setView(target)}>View more ›</Button></div>{tiles(items)}</section>;
-  const base = view === 'liked' ? games.filter(g => likes.includes(g.id)) : view === 'puzzle' ? puzzle : view === 'arcade' ? arcade : games;
+  const base = view === 'liked' ? games.filter(g => likes.includes(g.id)) : view === 'recent' ? recentGames : view === 'trending' ? trending : view === 'puzzle' ? puzzle : view === 'arcade' ? arcade : games;
   const list = base.filter(g => pretty(g.id).toLowerCase().includes(q.toLowerCase()));
   return <>
     <header className="border-b border-border bg-background"><div className="library-shell flex flex-wrap items-center gap-3 py-3">
@@ -81,24 +100,34 @@ function Index() {
       <Button variant="ghost" size="icon" aria-label="Liked games" title="Liked games" onClick={() => { setPlaying(null); setView('liked'); }}><Heart /></Button><AccountMenu />
     </div></header>
     <nav className="border-b border-border bg-card"><div className="library-shell flex flex-wrap items-center gap-1 py-1">
-      {([{id:'home', label:'Home', icon:Grid2X2}, {id:'all',label:'All games',icon:Grid2X2}, {id:'puzzle',label:'Puzzle',icon:Puzzle}, {id:'arcade',label:'Arcade',icon:Zap}] as const).map(item => <Button key={item.id} variant="ghost" className={`h-9 rounded-none px-3 text-xs ${view === item.id ? 'text-primary' : 'text-muted-foreground'}`} onClick={() => { setView(item.id); setPlaying(null); setQ(''); }}><item.icon className="size-4" />{item.label}</Button>)}
+      {([{id:'home', label:'Home', icon:Grid2X2}, {id:'all',label:'All games',icon:Grid2X2}, {id:'trending',label:'Trending',icon:Flame}, {id:'recent',label:'Recent',icon:Clock}, {id:'puzzle',label:'Puzzle',icon:Puzzle}, {id:'arcade',label:'Arcade',icon:Zap}] as const).map(item => <Button key={item.id} variant="ghost" className={`h-9 rounded-none px-3 text-xs ${view === item.id ? 'text-primary' : 'text-muted-foreground'}`} onClick={() => { setView(item.id); setPlaying(null); setQ(''); }}><item.icon className="size-4" />{item.label}</Button>)}
       <Button variant="ghost" className="h-9 px-3 text-xs" onClick={() => start(games[Math.floor(Math.random()*games.length)]?.id ?? '2048')}><Shuffle className="size-4 text-accent" />Random</Button>
     </div></nav>
     <main className="library-shell py-5">
       {error && <p role="status" className="mb-3 text-sm text-primary">{error}</p>}
-      {playing ? <>
+      {playing && playingGame ? <>
         <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_190px]">
           <section className="min-w-0"><div ref={player} className="flex aspect-video min-h-[340px] flex-col overflow-hidden rounded-md bg-card max-sm:h-[65dvh]">
-            <iframe key={`${playing}-${reload}`} src={`/g/${playing}/index.html`} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
-          </div><div className="flex flex-wrap items-center gap-2 bg-card px-3 py-3"><h1 className="mr-auto min-w-0 break-words text-lg font-bold">{pretty(playing)}</h1><Button variant="ghost" size="icon" aria-label={likes.includes(playing) ? 'Unlike game' : 'Like game'} title="Like game" onClick={() => toggle(playing)}><Heart fill={likes.includes(playing) ? 'currentColor' : 'none'} /></Button><Button variant="ghost" size="icon" aria-label="Reload game" title="Reload game" onClick={() => setReload(n => n+1)}><RotateCw /></Button><Button variant="secondary" size="icon" aria-label="Fullscreen" title="Fullscreen" onClick={() => { void player.current?.requestFullscreen().catch(() => setPlayerError('Fullscreen is not available in this browser.')); }}><Maximize /></Button></div>{playerError && <p role="status">{playerError}</p>}</section>
+            <iframe key={`${playing}-${reload}`} src={gameUrl(playingGame)} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
+          </div><div className="flex flex-wrap items-center gap-2 bg-card px-3 py-3"><h1 className="mr-auto min-w-0 break-words text-lg font-bold">{pretty(playing)}</h1><Button variant="ghost" size="icon" aria-label={likes.includes(playing) ? 'Unlike game' : 'Like game'} title="Like game" onClick={() => toggle(playing)}><Heart fill={likes.includes(playing) ? 'currentColor' : 'none'} /></Button><Button variant="ghost" size="icon" aria-label="Reload game" title="Reload game" onClick={() => setReload(n => n+1)}><RotateCw /></Button><Button variant="secondary" size="icon" aria-label="Fullscreen" title="Fullscreen" onClick={() => { void player.current?.requestFullscreen().catch(() => setPlayerError('Fullscreen is not available in this browser.')); }}><Maximize /></Button></div>{playerError && <p role="status">{playerError}</p>}
+            <div className="info-strip mt-3 rounded-md border border-border bg-card p-4">
+              <div className="mb-2 flex flex-wrap items-center gap-2"><Info className="size-4 text-primary" /><h2 className="text-sm font-bold">About this game</h2>
+                {tagsFor(playing).map(t => <span key={t} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">{t}</span>)}
+                {isTrending(playing) && <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">Trending</span>}
+              </div>
+              <p className="text-xs leading-relaxed text-muted-foreground">{gameInfo(playingGame)}</p>
+            </div>
+          </section>
           <aside className="hidden lg:block"><h2 className="mb-2 text-sm font-bold">More games</h2><div className="grid grid-cols-2 gap-2">{picks.filter(g => g.id !== playing).slice(0,12).map(g => <Button key={g.id} variant="ghost" title={pretty(g.id)} aria-label={pretty(g.id)} className="h-auto overflow-hidden rounded-md p-0" onClick={() => start(g.id)}><div className="aspect-square w-full"><Icon game={g} /></div></Button>)}</div></aside>
         </div><div className="mt-6">{shelf('More games',games.filter(g => g.id !== playing).slice(0,24),'all')}</div>
       </> : view === 'home' && !q ? <>
-        {shelf('Chicken picks',picks,'all')}
-        {shelf('Arcade games',arcade.slice(0,24),'arcade')}
-        {shelf('Puzzle games',puzzle.slice(0,24),'puzzle')}
-        {shelf('All games',games,'all')}
-      </> : <section><h1 className="mb-3 text-base font-bold">{q ? 'Search results' : view === 'liked' ? `Liked games (${likes.length})` : view === 'puzzle' ? 'Puzzle games' : view === 'arcade' ? 'Arcade games' : 'All games'}</h1>{list.length ? tiles(list) : <p className="text-sm text-muted-foreground">{view === 'liked' ? 'No liked games yet.' : 'No games found.'}</p>}</section>}
+        {recentGames.length > 0 && shelf('Recently played', recentGames.slice(0, 10), 'recent')}
+        {shelf('Trending now', trending.slice(0, 10), 'trending')}
+        {shelf('Chicken picks', picks, 'all')}
+        {shelf('Arcade games', arcade.slice(0, 20), 'arcade')}
+        {shelf('Puzzle games', puzzle.slice(0, 20), 'puzzle')}
+        {shelf('All games', games, 'all')}
+      </> : <section><h1 className="mb-3 text-base font-bold">{q ? 'Search results' : view === 'liked' ? `Liked games (${likes.length})` : view === 'recent' ? 'Recently played' : view === 'trending' ? 'Trending games' : view === 'puzzle' ? 'Puzzle games' : view === 'arcade' ? 'Arcade games' : 'All games'}</h1>{list.length ? tiles(list) : <p className="text-sm text-muted-foreground">{view === 'liked' ? 'No liked games yet.' : view === 'recent' ? 'No recently played games yet.' : 'No games found.'}</p>}</section>}
     </main>
     <footer className="library-shell border-t border-border py-5 text-xs text-muted-foreground">Chicken Games</footer>
   </>;
