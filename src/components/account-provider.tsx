@@ -4,7 +4,7 @@ import { useRouter } from '@tanstack/react-router';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-type Profile = { display_name: string; lumin_enabled: boolean; liked_games: string[] };
+type Profile = { display_name: string; liked_games: string[] };
 type Account = { user: User | null; ready: boolean; profile: Profile | null; saveProfile: (updates: Partial<Profile>) => Promise<void>; signOut: () => Promise<void> };
 const AccountContext = createContext<Account | null>(null);
 
@@ -37,7 +37,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     queryKey: ['profile', user?.id], enabled: Boolean(user),
     queryFn: async () => {
       if (!user) return null;
-      const { data, error } = await supabase.from('profiles').select('display_name,lumin_enabled,liked_games').eq('id', user.id).single();
+      const { data, error } = await supabase.from('profiles').select('display_name,liked_games').eq('id', user.id).single();
       if (error) throw error;
       return data;
     },

@@ -1,7 +1,6 @@
 - [x] Add saved profiles and optional account menu with login/signup/reset.
-- [x] Keep 3kh0 public; unlock the LuminSDK setting for signed-in accounts.
-- [x] Add half-transparent diagonal chicken background and reference-style game player.
-- [x] Test guest browsing, locked LuminSDK, signup validation, mobile layout, and 2048 player; access-rule tests pass.
-- [ ] Remove LuminSDK and its settings, embeds, and access helpers.
-- [ ] Match the supplied dark compact game library screenshots without advertisements.
+- [x] Keep 3kh0 games public.
+- [x] Test guest browsing, signup validation, mobile layout, and 2048 player.
+- [x] Remove LuminSDK and its settings, embeds, and access helpers.
+- [x] Match the supplied dark compact game library screenshots without advertisements.
 - [ ] Verify saved profiles and likes through a signed-in session: no registered account exists yet; email confirmation is required.
