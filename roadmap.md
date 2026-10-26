@@ -9,5 +9,5 @@
 - [x] Add save-progress wrapper (per-game localStorage snapshots).
 - [x] Add tags (Puzzle/Arcade/Racing/etc.) and a curated Trending badge/shelf.
 - [x] Add Recently played shelf and view.
-- [ ] Verify a GitHub-pack game loads and saves progress in the preview.
+- [x] Verify a GitHub-pack game loads and saves progress in the preview.
 - [ ] Verify saved profiles and likes through a signed-in session: no registered account exists yet; email confirmation is required.
