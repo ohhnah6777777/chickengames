@@ -3,4 +3,11 @@
 - [x] Test guest browsing, signup validation, mobile layout, and 2048 player.
 - [x] Remove LuminSDK and its settings, embeds, and access helpers.
 - [x] Match the supplied dark compact game library screenshots without advertisements.
+- [x] Add "About this game" info strip with tags under the player.
+- [x] Make game icons ~15% bigger (10-column grid).
+- [x] Add 224 games from the Offline-HTML-Games-Pack (GitHub) with icons.
+- [x] Add save-progress wrapper (per-game localStorage snapshots).
+- [x] Add tags (Puzzle/Arcade/Racing/etc.) and a curated Trending badge/shelf.
+- [x] Add Recently played shelf and view.
+- [ ] Verify a GitHub-pack game loads and saves progress in the preview.
 - [ ] Verify saved profiles and likes through a signed-in session: no registered account exists yet; email confirmation is required.
