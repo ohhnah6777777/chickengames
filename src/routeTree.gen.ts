@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as GSplatRouteImport } from './routes/g.$'
 import { Route as OSplatRouteImport } from './routes/o.$'
 import { Route as PlaySplatRouteImport } from './routes/play.$'
+import { Route as ZSplatRouteImport } from './routes/z.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const PlaySplatRoute = PlaySplatRouteImport.update({
   path: '/play/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ZSplatRoute = ZSplatRouteImport.update({
+  id: '/z/$',
+  path: '/z/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/g/$': typeof GSplatRoute
   '/o/$': typeof OSplatRoute
   '/play/$': typeof PlaySplatRoute
+  '/z/$': typeof ZSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/g/$': typeof GSplatRoute
   '/o/$': typeof OSplatRoute
   '/play/$': typeof PlaySplatRoute
+  '/z/$': typeof ZSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,15 @@ export interface FileRoutesById {
   '/g/$': typeof GSplatRoute
   '/o/$': typeof OSplatRoute
   '/play/$': typeof PlaySplatRoute
+  '/z/$': typeof ZSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$'
+  fullPaths: '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$'
-  id: '__root__' | '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$'
+  to: '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
+  id:
+    '__root__' | '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +87,7 @@ export interface RootRouteChildren {
   GSplatRoute: typeof GSplatRoute
   OSplatRoute: typeof OSplatRoute
   PlaySplatRoute: typeof PlaySplatRoute
+  ZSplatRoute: typeof ZSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlaySplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/z/$': {
+      id: '/z/$'
+      path: '/z/$'
+      fullPath: '/z/$'
+      preLoaderRoute: typeof ZSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +143,7 @@ const rootRouteChildren: RootRouteChildren = {
   GSplatRoute: GSplatRoute,
   OSplatRoute: OSplatRoute,
   PlaySplatRoute: PlaySplatRoute,
+  ZSplatRoute: ZSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

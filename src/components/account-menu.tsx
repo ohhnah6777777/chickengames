@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { UserCircle, LogOut, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import '@lovable.dev/cloud-auth-js/styles.css';
 
-export function AccountMenu() {
+export function AccountMenu({ children, className }: { children?: ReactNode; className?: string } = {}) {
   const { user, profile, saveProfile, signOut, ready } = useAccount();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<'info' | 'login' | 'signup' | 'forgot'>('info');
@@ -44,8 +44,9 @@ export function AccountMenu() {
     if (result.error) throw result.error;
     if (!result.redirected) setMode('info');
   });
+  const openMenu = () => { setOpen(true); setMode('info'); setMessage(''); setName(profile?.display_name ?? ''); };
   return <>
-    <Button variant="outline" size="icon" className="shrink-0 rounded-full border-2" aria-label="Account" title="Account" onClick={() => { setOpen(true); setMode('info'); setMessage(''); setName(profile?.display_name ?? ''); }}><UserCircle /></Button>
+    {children ? <button type="button" className={className} onClick={openMenu}>{children}</button> : <Button variant="outline" size="icon" className="shrink-0 rounded-full border-2" aria-label="Account" title="Account" onClick={openMenu}><UserCircle /></Button>}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg bg-card">
         <DialogTitle>Your account</DialogTitle>
