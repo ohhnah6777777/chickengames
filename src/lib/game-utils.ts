@@ -1,4 +1,4 @@
-export type Game = { id: string; icon: boolean; src?: "gh"; file?: string };
+export type Game = { id: string; icon: boolean; src?: "gh" | "gz"; file?: string };
 
 export const pretty = (s: string) =>
   s.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -32,7 +32,8 @@ export const TRENDING = [
 export const isTrending = (id: string) => TRENDING.includes(id);
 
 export function gameUrl(game: Game): string {
-  return game.src === "gh" ? `/play/gh/${game.file}` : `/play/3kh0/${game.id}/index.html`;
+  if (game.src === "gh" || game.src === "gz") return `/play/${game.src}/${game.file}`;
+  return `/play/3kh0/${game.id}/index.html`;
 }
 
 export function gameInfo(game: Game): string {
