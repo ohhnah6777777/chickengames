@@ -9,13 +9,13 @@ export const Route = createFileRoute("/play/$")({
     handlers: {
       GET: async ({ params }) => {
         const splat = params._splat ?? "";
-        const m = /^(gh|3kh0)\/(.+)$/.exec(splat);
+        const m = /^(gh|gz|3kh0)\/(.+)$/.exec(splat);
         if (!m) return new Response("Not found", { status: 404 });
         const source = m[1];
         const rest = m[2] ?? "";
         if (rest.includes("..") || rest.includes('"') || rest.includes("<"))
           return new Response("Not found", { status: 404 });
-        const real = source === "gh" ? `/o/${rest}` : `/g/${rest}`;
+        const real = source === "gh" ? `/o/${rest}` : source === "gz" ? `/z/${rest}` : `/g/${rest}`;
         const key = `cg-save:${source}:${rest}`;
         const html = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000}iframe{border:0;width:100%;height:100%;display:block}</style></head><body><script>
 var KEY=${JSON.stringify(key)},REAL=${JSON.stringify(real)};
