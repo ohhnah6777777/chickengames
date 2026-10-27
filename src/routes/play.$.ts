@@ -11,7 +11,7 @@ export const Route = createFileRoute("/play/$")({
         const splat = params._splat ?? "";
         const m = /^(gh|3kh0)\/(.+)$/.exec(splat);
         if (!m) return new Response("Not found", { status: 404 });
-        const [, source, rest] = m;
+        const rest = m[2] ?? "";
         if (rest.includes("..") || rest.includes('"') || rest.includes("<"))
           return new Response("Not found", { status: 404 });
         const real = source === "gh" ? `/o/${rest}` : `/g/${rest}`;
