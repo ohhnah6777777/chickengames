@@ -84,6 +84,7 @@ function Index() {
   const base = view === "liked" ? games.filter((g) => likes.includes(g.id)) : view === "recent" ? recent.flatMap((id) => byId.get(id) ?? []) : games;
   const list = base.filter((g) => (!tag || tagsFor(g.id).includes(tag)) && pretty(g.id).toLowerCase().includes(q.toLowerCase()));
   const plain = !q && !tag && view === "all";
+  const shown = plain ? [...top, ...list.filter((g) => !TOP.includes(g.id))] : list;
 
   const tile = (g: Game, i: number, size = "") => (
     <div key={g.id} className={`game-tile group ${size}`}>
@@ -192,7 +193,7 @@ function Index() {
           {list.length ? (
             <div className="mosaic">
               <div aria-hidden className="pointer-events-none" style={{ gridRow: "span 2", aspectRatio: "auto" }} />
-              {list.map((g, i) => tile(g, i, plain ? sizeFor(i + 1) : ""))}
+              {shown.map((g, i) => tile(g, i, plain && g.icon ? sizeFor(i + 1) : ""))}
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3 py-24 text-center">
