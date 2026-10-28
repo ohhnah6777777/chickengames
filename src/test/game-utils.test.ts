@@ -25,3 +25,9 @@ describe("game utils", () => {
     expect(TRENDING.length).toBeGreaterThanOrEqual(15);
   });
 });
+
+describe("genizymath games", () => {
+  it("route through the gz save wrapper", () => {
+    expect(gameUrl({ id: "x", icon: false, src: "gz", file: "653-fix2.html" })).toBe("/play/gz/653-fix2.html");
+  });
+});

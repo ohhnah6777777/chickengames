@@ -191,7 +191,7 @@ function Index() {
           </div>}
           {list.length ? (
             <div className="mosaic">
-              <div aria-hidden className="pointer-events-none" />
+              <div aria-hidden className="pointer-events-none" style={{ gridRow: "span 2", aspectRatio: "auto" }} />
               {list.map((g, i) => tile(g, i, plain ? sizeFor(i + 1) : ""))}
             </div>
           ) : (
