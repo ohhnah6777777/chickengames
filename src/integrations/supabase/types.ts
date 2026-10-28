@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_comments: {
+        Row: {
+          body: string
+          created_at: string
+          display_name: string
+          game_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          display_name: string
+          game_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          display_name?: string
+          game_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      game_reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          game_id: string
+          id: string
+          reason: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          game_id: string
+          id?: string
+          reason: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          game_id?: string
+          id?: string
+          reason?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
