@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as GSplatRouteImport } from './routes/g.$'
 import { Route as OSplatRouteImport } from './routes/o.$'
@@ -19,6 +20,11 @@ import { Route as ZSplatRouteImport } from './routes/z.$'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -49,6 +55,7 @@ const ZSplatRoute = ZSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/g/$': typeof GSplatRoute
   '/o/$': typeof OSplatRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/g/$': typeof GSplatRoute
   '/o/$': typeof OSplatRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/g/$': typeof GSplatRoute
   '/o/$': typeof OSplatRoute
@@ -74,15 +83,25 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
+  fullPaths:
+    '/' | '/profile' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
+  to:
+    '/' | '/profile' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
   id:
-    '__root__' | '/' | '/reset-password' | '/g/$' | '/o/$' | '/play/$' | '/z/$'
+    | '__root__'
+    | '/'
+    | '/profile'
+    | '/reset-password'
+    | '/g/$'
+    | '/o/$'
+    | '/play/$'
+    | '/z/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   GSplatRoute: typeof GSplatRoute
   OSplatRoute: typeof OSplatRoute
@@ -97,6 +116,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -139,6 +165,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   GSplatRoute: GSplatRoute,
   OSplatRoute: OSplatRoute,
