@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CommentBox, ReportButton } from "@/components/game-social";
 import { useEffect, useRef, useState } from "react";
 import gamesData from "@/lib/games.json";
 import { gameInfo, gameUrl, isTrending, pretty, tagsFor, type Game } from "@/lib/game-utils";
@@ -108,8 +109,8 @@ function Index() {
 
   return (
     <div className="min-h-dvh">
-      {/* Floating logo card */}
-      <div className="fixed left-3 top-3 z-30 w-[104px] overflow-hidden rounded-2xl bg-secondary text-secondary-foreground shadow-lg">
+      {/* Logo card: home page only, pinned top-right, scrolls away with the page */}
+      {!playing && <div className="absolute right-3 top-3 z-30 w-[104px] overflow-hidden rounded-2xl bg-secondary text-secondary-foreground shadow-lg">
         <button type="button" className="flex w-full flex-col items-center gap-0.5 px-2 pb-1 pt-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Blues Games home">
           <img src="/mascot.webp" alt="" width={48} height={48} className="size-12 object-contain" />
           <span className="font-display text-[13px] font-bold leading-none text-card">Blues Games</span>
@@ -118,7 +119,7 @@ function Index() {
           <button type="button" aria-label="Account" title="Account" className="flex h-9 items-center justify-center hover:bg-accent" onClick={() => setPanel("account")}><User className="size-4" /></button>
           <button type="button" aria-label="Search" title="Search" className="flex h-9 items-center justify-center hover:bg-accent" onClick={() => setPanel("search")}><Search className="size-4" /></button>
         </div>
-      </div>
+      </div>}
 
       {/* Yellow slide-out panel */}
       {panel && <button type="button" aria-label="Close panel" className="fixed inset-0 z-40 bg-background/60 backdrop-blur-[1px]" onClick={() => setPanel(null)} />}
@@ -147,7 +148,8 @@ function Index() {
               <img src="/mascot-thumbs.webp" alt="" width={56} height={56} className="size-14 object-contain" />
               <div className="min-w-0"><p className="font-bold">{user ? profile?.display_name ?? "Player" : "Local player"}</p><p className="text-xs opacity-70">{user ? "Your likes are saved to your account." : "Local account · not saved to an account"}</p></div>
             </div>
-            <AccountMenu className="panel-row"><span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground"><User className="size-4" /></span><span className="flex-1">Profile</span><ChevronRight className="size-4" /></AccountMenu>
+            <Link to="/profile" className="panel-row"><span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground"><User className="size-4" /></span><span className="flex-1">Profile</span><ChevronRight className="size-4" /></Link>
+            <AccountMenu className="panel-row"><span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground"><User className="size-4" /></span><span className="flex-1">{user ? "Account settings" : "Log in / Sign up"}</span><ChevronRight className="size-4" /></AccountMenu>
             {row(<Heart className="size-4" />, `Liked games (${likes.length})`, () => { setView("liked"); setPlaying(null); setPanel(null); })}
             {row(<Clock className="size-4" />, "Recently played", () => { setView("recent"); setPlaying(null); setPanel(null); })}
             {row(<Shuffle className="size-4" />, "Random game", () => start(games[Math.floor(Math.random() * games.length)]?.id ?? "2048"))}
@@ -163,13 +165,15 @@ function Index() {
       {error && <p role="status" className="fixed bottom-3 left-1/2 z-50 -translate-x-1/2 rounded-full bg-secondary px-4 py-2 text-sm text-secondary-foreground">{error}</p>}
 
       {playing && playingGame ? (
-        <main className="mx-auto max-w-6xl px-3 pb-10 pt-3 sm:pl-[130px]">
-          <div ref={player} className="flex aspect-video min-h-[340px] flex-col overflow-hidden rounded-2xl bg-card shadow-xl max-sm:mt-28 max-sm:h-[65dvh]">
+        <main className="mx-auto max-w-6xl px-3 pb-10 pt-3">
+          <div ref={player} className="flex aspect-video min-h-[340px] flex-col overflow-hidden rounded-2xl bg-card shadow-xl max-sm:h-[65dvh]">
             <iframe key={`${playing}-${reload}`} src={gameUrl(playingGame)} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-panel px-4 py-3 text-panel-foreground">
+            <Button variant="ghost" size="icon" aria-label="Back to games" onClick={() => setPlaying(null)}><ArrowLeft /></Button>
             <h1 className="mr-auto min-w-0 break-words font-display text-xl font-bold">{pretty(playing)}</h1>
             <Button variant="ghost" size="icon" aria-label={likes.includes(playing) ? "Unlike game" : "Like game"} onClick={() => toggle(playing)}><Heart fill={likes.includes(playing) ? "currentColor" : "none"} /></Button>
+            <ReportButton gameId={playing} />
             <Button variant="ghost" size="icon" aria-label="Reload game" onClick={() => setReload((n) => n + 1)}><RotateCw /></Button>
             <Button size="icon" className="bg-card text-foreground hover:bg-card/90" aria-label="Fullscreen" onClick={() => { void player.current?.requestFullscreen().catch(() => setPlayerError("Fullscreen is not available in this browser.")); }}><Maximize /></Button>
           </div>
@@ -181,18 +185,19 @@ function Index() {
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">{gameInfo(playingGame)}</p>
           </div>
+          <CommentBox gameId={playing} />
           <h2 className="mb-2 mt-6 font-display text-lg font-bold">More games</h2>
           <div className="game-grid">{games.filter((g) => g.id !== playing).slice(0, 30).map((g, i) => tile(g, i))}</div>
         </main>
       ) : (
         <main>
-          {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pl-[130px]">
+          {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pr-[130px]">
             <h1 className="font-display text-xl font-bold">{view === "liked" ? "Liked games" : view === "recent" ? "Recently played" : q ? `Results for "${q}"` : `${tag} games`}</h1>
             <Button size="sm" className="rounded-full" onClick={() => { setView("all"); setQ(""); setTag(null); }}>Show all</Button>
           </div>}
           {list.length ? (
             <div className="mosaic">
-              <div aria-hidden className="pointer-events-none" style={{ gridRow: "span 2", aspectRatio: "auto" }} />
+              <div aria-hidden className="pointer-events-none" style={{ gridColumn: "-2 / -1", gridRow: "1 / span 2", aspectRatio: "auto" }} />
               {shown.map((g, i) => tile(g, i, plain && g.icon ? sizeFor(i + 1) : ""))}
             </div>
           ) : (
