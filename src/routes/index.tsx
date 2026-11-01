@@ -91,7 +91,6 @@ function Index() {
     <div key={g.id} className={`game-tile group ${size}`}>
       <button type="button" aria-label={pretty(g.id)} title={pretty(g.id)} onClick={() => start(g.id)} className="block h-full w-full bg-card">
         <Icon game={g} />
-        {isTrending(g.id) && <span className="tile-badge"><Flame className="size-2.5" />Hot</span>}
         <span className="tile-name truncate">{pretty(g.id)}</span>
       </button>
       <Button variant="secondary" size="icon" aria-label={`${likes.includes(g.id) ? "Unlike" : "Like"} ${pretty(g.id)}`} onClick={() => toggle(g.id)} className="absolute right-1.5 top-1.5 size-7 rounded-full opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
@@ -109,17 +108,20 @@ function Index() {
 
   return (
     <div className="min-h-dvh">
-      {/* Logo card: home page only, pinned top-left, scrolls away with the page */}
-      {!playing && <div className="absolute left-3 top-3 z-30 w-[104px] overflow-hidden rounded-2xl bg-secondary text-secondary-foreground shadow-lg">
-        <button type="button" className="flex w-full flex-col items-center gap-0.5 px-2 pb-1 pt-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Blues Games home">
-          <img src="/mascot.webp" alt="" width={48} height={48} className="size-12 object-contain" />
-          <span className="font-display text-[13px] font-bold leading-none text-card">Blues Games</span>
+      {!playing && <header className="flex flex-col items-center gap-3 px-4 pb-2 pt-6">
+        <button type="button" className="flex items-center gap-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Blues Games home">
+          <img src="/mascot.webp" alt="" width={56} height={56} className="size-14 object-contain drop-shadow-[0_0_12px_var(--glow)]" />
+          <span className="font-display text-3xl font-bold">Blues Games</span>
         </button>
-        <div className="grid grid-cols-2 border-t border-border/40 bg-card text-foreground">
-          <button type="button" aria-label="Account" title="Account" className="flex h-9 items-center justify-center hover:bg-accent" onClick={() => setPanel("account")}><User className="size-4" /></button>
-          <button type="button" aria-label="Search" title="Search" className="flex h-9 items-center justify-center hover:bg-accent" onClick={() => setPanel("search")}><Search className="size-4" /></button>
+        <div className="flex w-full max-w-xl items-center gap-2">
+          <label className="flex flex-1 items-center gap-3 rounded-full border border-border bg-card px-4 py-2.5">
+            <Search className="size-4 opacity-60" />
+            <input aria-label="Search games" placeholder="What are you playing today?" value={q} onChange={(e) => setQ(e.target.value)} className="w-full bg-transparent text-sm outline-none" />
+          </label>
+          <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Search filters" onClick={() => setPanel("search")}><Search className="size-4" /></Button>
+          <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Account" onClick={() => setPanel("account")}><User className="size-4" /></Button>
         </div>
-      </div>}
+      </header>}
 
       {/* Yellow slide-out panel */}
       {panel && <button type="button" aria-label="Close panel" className="fixed inset-0 z-40 bg-background/60 backdrop-blur-[1px]" onClick={() => setPanel(null)} />}
@@ -197,7 +199,6 @@ function Index() {
           </div>}
           {list.length ? (
             <div className="mosaic">
-              <div aria-hidden className="pointer-events-none" style={{ gridColumn: "-2 / -1", gridRow: "1 / span 2", aspectRatio: "auto" }} />
               {shown.map((g, i) => tile(g, i, plain && g.icon ? sizeFor(i + 1) : ""))}
             </div>
           ) : (
