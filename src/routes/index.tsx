@@ -191,7 +191,7 @@ function Index() {
         </main>
       ) : (
         <main>
-          {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pr-[130px]">
+          {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pl-[130px]">
             <h1 className="font-display text-xl font-bold">{view === "liked" ? "Liked games" : view === "recent" ? "Recently played" : q ? `Results for "${q}"` : `${tag} games`}</h1>
             <Button size="sm" className="rounded-full" onClick={() => { setView("all"); setQ(""); setTag(null); }}>Show all</Button>
           </div>}
