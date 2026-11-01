@@ -155,7 +155,7 @@ body { isolation: isolate; }
 .account-input { width: 100%; min-width: 0; border: 2px solid var(--input); background: var(--card); border-radius: var(--radius); padding: 8px 12px; outline-color: var(--ring); }
 
 .library-shell { width: min(1160px, 100%); margin-inline: auto; padding-inline: 18px; }
-.mosaic { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); grid-auto-rows: auto; grid-auto-flow: dense; gap: 10px; padding: 14px; }
+.mosaic { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); grid-auto-rows: auto; grid-auto-flow: dense; gap: 10px; padding: 14px; }
 .mosaic > * { aspect-ratio: 1; }
 .mosaic .big { grid-column: span 2; grid-row: span 2; }
 .mosaic .huge { grid-column: span 3; grid-row: span 3; }
@@ -164,8 +164,8 @@ body { isolation: isolate; }
 .game-tile .tile-name { position: absolute; inset: auto 0 0; padding: 6px 8px; background: linear-gradient(transparent, oklch(0.2 0.08 260 / 0.85)); color: var(--foreground); font-size: 12px; font-weight: 700; opacity: 0; transition: opacity 150ms; text-align: left; }
 .game-tile:hover .tile-name, .game-tile:focus-within .tile-name { opacity: 1; }
 .tile-badge { position: absolute; top: 6px; left: 6px; display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: 10px; font-weight: 800; }
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; }
 .panel-row { display: flex; width: 100%; align-items: center; gap: 14px; padding: 16px; border-radius: 14px; background: var(--panel-row); color: var(--panel-foreground); font-weight: 700; font-size: 17px; text-align: left; transition: filter 150ms; }
 .panel-row:hover { filter: brightness(1.08); }
-@media (max-width: 500px) { .mosaic { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; padding: 8px; } .mosaic .huge { grid-column: span 2; grid-row: span 2; } }
+@media (max-width: 500px) { .mosaic { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 8px; } .mosaic .huge { grid-column: span 2; grid-row: span 2; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }

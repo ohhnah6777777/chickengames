@@ -109,8 +109,8 @@ function Index() {
 
   return (
     <div className="min-h-dvh">
-      {/* Logo card: home page only, pinned top-right, scrolls away with the page */}
-      {!playing && <div className="absolute right-3 top-3 z-30 w-[104px] overflow-hidden rounded-2xl bg-secondary text-secondary-foreground shadow-lg">
+      {/* Logo card: home page only, pinned top-left, scrolls away with the page */}
+      {!playing && <div className="absolute left-3 top-3 z-30 w-[104px] overflow-hidden rounded-2xl bg-secondary text-secondary-foreground shadow-lg">
         <button type="button" className="flex w-full flex-col items-center gap-0.5 px-2 pb-1 pt-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Blues Games home">
           <img src="/mascot.webp" alt="" width={48} height={48} className="size-12 object-contain" />
           <span className="font-display text-[13px] font-bold leading-none text-card">Blues Games</span>
@@ -191,7 +191,7 @@ function Index() {
         </main>
       ) : (
         <main>
-          {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pr-[130px]">
+          {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pl-[130px]">
             <h1 className="font-display text-xl font-bold">{view === "liked" ? "Liked games" : view === "recent" ? "Recently played" : q ? `Results for "${q}"` : `${tag} games`}</h1>
             <Button size="sm" className="rounded-full" onClick={() => { setView("all"); setQ(""); setTag(null); }}>Show all</Button>
           </div>}
