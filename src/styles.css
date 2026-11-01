@@ -68,11 +68,12 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.52 0.15 250);
-  --foreground: oklch(0.98 0.01 250);
-  --card: oklch(0.42 0.14 255);
+  --glow: oklch(0.7 0.18 250 / 0.55);
+  --background: oklch(0.14 0.02 260);
+  --foreground: oklch(0.96 0.01 250);
+  --card: oklch(0.2 0.03 260);
   --card-foreground: var(--foreground);
-  --popover: oklch(0.36 0.12 258);
+  --popover: oklch(0.2 0.03 260);
   --popover-foreground: var(--foreground);
   --primary: oklch(0.89 0.18 98);
   --primary-foreground: oklch(0.25 0.05 255);
@@ -159,7 +160,8 @@ body { isolation: isolate; }
 .mosaic > * { aspect-ratio: 1; }
 .mosaic .big { grid-column: span 2; grid-row: span 2; }
 .mosaic .huge { grid-column: span 3; grid-row: span 3; }
-.game-tile { position: relative; min-width: 0; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-tile); transition: transform 150ms; }
+.game-tile { position: relative; min-width: 0; border-radius: 14px; overflow: hidden; box-shadow: 0 0 14px -2px var(--glow), 0 0 0 1px var(--border); transition: transform 150ms, box-shadow 150ms; }
+.game-tile:hover { box-shadow: 0 0 26px 2px var(--glow); }
 .game-tile:hover { transform: scale(1.04); z-index: 2; }
 .game-tile .tile-name { position: absolute; inset: auto 0 0; padding: 6px 8px; background: linear-gradient(transparent, oklch(0.2 0.08 260 / 0.85)); color: var(--foreground); font-size: 12px; font-weight: 700; opacity: 0; transition: opacity 150ms; text-align: left; }
 .game-tile:hover .tile-name, .game-tile:focus-within .tile-name { opacity: 1; }
