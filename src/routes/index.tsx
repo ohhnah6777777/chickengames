@@ -7,6 +7,8 @@ import { ArrowLeft, ChevronRight, Clock, Flame, Heart, Info, Maximize, RotateCw,
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/components/account-menu";
 import { useAccount } from "@/components/account-provider";
+import { SiteFooter } from "@/components/site-footer";
+import { Suggestions } from "@/components/suggestions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -111,7 +113,7 @@ function Index() {
       {!playing && <header className="flex flex-col items-center gap-3 px-4 pb-2 pt-6">
         <button type="button" className="flex items-center gap-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Blues Games home">
           <img src="/mascot.webp" alt="" width={56} height={56} className="size-14 object-contain drop-shadow-[0_0_12px_var(--glow)]" />
-          <span className="font-display text-3xl font-bold">Blues Games</span>
+          <span className="brand-title text-4xl sm:text-5xl">Blues <span className="text-primary [-webkit-text-fill-color:currentColor]">Games</span></span>
         </button>
         <div className="flex w-full max-w-xl items-center gap-2">
           <label className="flex flex-1 items-center gap-3 rounded-full border border-border bg-card px-4 py-2.5">
@@ -193,6 +195,7 @@ function Index() {
         </main>
       ) : (
         <main>
+          {plain && <Suggestions recent={recent} onPlay={start} />}
           {!plain && <div className="flex flex-wrap items-center gap-2 px-4 pt-4 sm:pl-[130px]">
             <h1 className="font-display text-xl font-bold">{view === "liked" ? "Liked games" : view === "recent" ? "Recently played" : q ? `Results for "${q}"` : `${tag} games`}</h1>
             <Button size="sm" className="rounded-full" onClick={() => { setView("all"); setQ(""); setTag(null); }}>Show all</Button>
@@ -209,6 +212,7 @@ function Index() {
           )}
         </main>
       )}
+      <SiteFooter count={games.length} />
     </div>
   );
 }
