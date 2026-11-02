@@ -6,7 +6,7 @@ const ids = (gamesData as { id: string }[]).map((g) => g.id);
 const idSet = new Set(ids);
 
 export const recommendGames = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ recent: z.array(z.string().max(120)).max(12) }).parse(d))
+  .validator((d) => z.object({ recent: z.array(z.string().max(120)).max(12) }).parse(d))
   .handler(async ({ data }): Promise<{ ids: string[]; error?: string }> => {
     const recent = data.recent.filter((id) => idSet.has(id));
     if (!recent.length) return { ids: [] };
