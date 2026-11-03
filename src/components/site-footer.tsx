@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 export function SiteFooter({ count }: { count: number }) {
   const rounded = Math.floor(count / 50) * 50;
   return (
