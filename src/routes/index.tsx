@@ -125,28 +125,38 @@ function Index() {
         </div>
       </header>}
 
+      {/* Full-page search that drops from the top */}
+      <section aria-hidden={panel !== "search"} className={`fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background/95 backdrop-blur-md transition-transform duration-300 ${panel === "search" ? "translate-y-0" : "-translate-y-full"}`}>
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-2xl font-bold">Top Games</h2>
+            <Button variant="secondary" size="icon" className="rounded-full" aria-label="Close search" onClick={() => setPanel(null)}><ArrowLeft className="size-4 rotate-90" /></Button>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {top.map((g) => <button key={g.id} type="button" onClick={() => start(g.id)} className="w-28 shrink-0 overflow-hidden rounded-xl bg-card text-left shadow-[0_0_14px_var(--glow)]"><div className="size-28"><Icon game={g} /></div><p className="truncate px-2 py-1.5 text-xs font-bold">{pretty(g.id)}</p></button>)}
+          </div>
+          <label className="flex items-center gap-3 rounded-lg border-2 border-primary bg-card px-4 py-3 shadow-[0_0_18px_var(--glow)]">
+            <input autoFocus={panel === "search"} aria-label="Search games" placeholder="Search Blues Games" value={q} onChange={(e) => { setQ(e.target.value); setPlaying(null); }} onKeyDown={(e) => e.key === "Enter" && setPanel(null)} className="w-full bg-transparent text-lg outline-none" />
+            <Search className="size-5" />
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {FILTER_TAGS.map((t) => <button key={t} type="button" onClick={() => { setTag(tag === t ? null : t); setPlaying(null); }} className={`rounded-md px-4 py-2 text-xs font-extrabold uppercase ${tag === t ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{t}</button>)}
+          </div>
+          <div className="grid gap-1.5 rounded-xl bg-card p-3">
+            {["1234567890", "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"].map((r) => <div key={r} className="flex justify-center gap-1.5">{r.split("").map((k) => <button key={k} type="button" onClick={() => { setQ(q + k.toLowerCase()); setPlaying(null); }} className="h-10 min-w-0 flex-1 max-w-14 rounded-md bg-secondary font-bold text-secondary-foreground hover:ring-2 hover:ring-primary">{k}</button>)}</div>)}
+            <div className="flex gap-1.5"><button type="button" onClick={() => setQ(q + " ")} className="h-10 flex-1 rounded-md bg-secondary text-secondary-foreground">Space</button><button type="button" onClick={() => setQ(q.slice(0, -1))} className="h-10 w-24 rounded-md bg-secondary text-secondary-foreground">Delete</button><button type="button" onClick={() => setPanel(null)} className="h-10 w-24 rounded-md bg-primary font-bold text-primary-foreground">{list.length} games</button></div>
+          </div>
+        </div>
+      </section>
+
       {/* Yellow slide-out panel */}
-      {panel && <button type="button" aria-label="Close panel" className="fixed inset-0 z-40 bg-background/60 backdrop-blur-[1px]" onClick={() => setPanel(null)} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-[min(400px,90vw)] flex-col overflow-y-auto bg-panel text-panel-foreground shadow-2xl transition-transform duration-200 ${panel ? "translate-x-0" : "-translate-x-full"}`} aria-hidden={!panel}>
+      {(panel === "account" || panel === "settings") && <button type="button" aria-label="Close panel" className="fixed inset-0 z-40 bg-background/60 backdrop-blur-[1px]" onClick={() => setPanel(null)} />}
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-[min(400px,90vw)] flex-col overflow-y-auto bg-panel text-panel-foreground shadow-2xl transition-transform duration-200 ${panel === "account" || panel === "settings" ? "translate-x-0" : "-translate-x-full"}`} aria-hidden={!(panel === "account" || panel === "settings")}>
         <div className="flex items-center gap-3 border-b border-panel-foreground/10 px-4 py-4">
           <button type="button" aria-label="Back" className="flex size-9 items-center justify-center rounded-full bg-secondary/70" onClick={() => setPanel(panel === "settings" ? "account" : null)}><ArrowLeft className="size-4" /></button>
-          <h2 className="font-display text-xl font-bold">{panel === "search" ? "Search" : panel === "settings" ? "Settings" : "Account"}</h2>
+          <h2 className="font-display text-xl font-bold">{panel === "settings" ? "Settings" : "Account"}</h2>
         </div>
         <div className="grid gap-4 p-5">
-          {panel === "search" && <>
-            <label className="flex items-center gap-3 rounded-full bg-secondary px-4 py-3 text-secondary-foreground shadow-sm">
-              <Search className="size-4 opacity-60" />
-              <input autoFocus aria-label="Search games" placeholder="What are you playing today?" value={q} onChange={(e) => { setQ(e.target.value); setPlaying(null); }} className="w-full bg-transparent text-sm outline-none" />
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {FILTER_TAGS.map((t) => <button key={t} type="button" onClick={() => { setTag(tag === t ? null : t); setPlaying(null); }} className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase shadow-sm ${tag === t ? "bg-card text-foreground" : "bg-secondary text-secondary-foreground"}`}>{t}</button>)}
-            </div>
-            <p className="text-sm font-semibold">{list.length} games {q || tag ? "match" : "in the library"}</p>
-            <h3 className="font-display text-xl font-bold">Top Games</h3>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {top.map((g) => <button key={g.id} type="button" title={pretty(g.id)} onClick={() => start(g.id)} className="size-24 shrink-0 overflow-hidden rounded-xl shadow-md"><Icon game={g} /></button>)}
-            </div>
-          </>}
           {panel === "account" && <>
             <div className="flex items-center gap-3 rounded-2xl bg-secondary p-4 text-secondary-foreground">
               <img src="/mascot-thumbs.webp" alt="" width={56} height={56} className="size-14 object-contain" />
