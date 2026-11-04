@@ -169,6 +169,13 @@ body { isolation: isolate; }
 .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; }
 .panel-row { display: flex; width: 100%; align-items: center; gap: 14px; padding: 16px; border-radius: 14px; background: var(--panel-row); color: var(--panel-foreground); font-weight: 700; font-size: 17px; text-align: left; transition: filter 150ms; }
 .panel-row:hover { filter: brightness(1.08); }
+.cat-bar { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 56rem; overflow-x: auto; padding: 2px 4px 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.cat-bar::-webkit-scrollbar { display: none; }
+.cat-pill { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; padding: 8px 15px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--card-foreground); font-family: var(--font-display); font-weight: 600; font-size: 13px; line-height: 1; white-space: nowrap; box-shadow: 0 0 10px -5px var(--glow); transition: transform 150ms, box-shadow 150ms, background 150ms, color 150ms; }
+.cat-pill:hover { transform: translateY(-1px); box-shadow: 0 0 16px -2px var(--glow); }
+.cat-pill.is-active { background: var(--primary); color: var(--primary-foreground); border-color: transparent; box-shadow: 0 0 18px -2px var(--glow); }
+.cat-pill span { font-size: 15px; }
+
 @media (max-width: 500px) { .mosaic { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 8px; } .mosaic .huge { grid-column: span 2; grid-row: span 2; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
 
