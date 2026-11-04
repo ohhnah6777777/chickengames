@@ -68,6 +68,7 @@ function Index() {
   const [tag, setTag] = useState<string | null>(null);
   const [view, setView] = useState<"all" | "liked" | "recent">("all");
   const [panel, setPanel] = useState<Panel>(null);
+  const [catScrolled, setCatScrolled] = useState(false);
   const [playing, setPlaying] = useState<string | null>(null);
   const { likes, toggle, error } = useLikes();
   const [recent, saveRecent] = useLocalList("cg-recent");
@@ -123,7 +124,7 @@ function Index() {
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Account" onClick={() => setPanel("account")}><User className="size-4" /></Button>
         </div>
         <div className="relative w-full max-w-[56rem]">
-          <nav aria-label="Game categories" className="cat-bar">
+          <nav aria-label="Game categories" className="cat-bar" onScroll={(e) => setCatScrolled(e.currentTarget.scrollLeft > 4)}>
             <button type="button" aria-pressed={!tag} onClick={() => setTag(null)} className={`cat-pill ${!tag ? "is-active" : ""}`}><span aria-hidden>✨</span>All</button>
             {CATEGORIES.map((c) => (
               <button key={c.tag} type="button" aria-pressed={tag === c.tag} title={`${c.label} games`} onClick={() => setTag(tag === c.tag ? null : c.tag)} className={`cat-pill ${tag === c.tag ? "is-active" : ""}`}>
@@ -131,6 +132,7 @@ function Index() {
               </button>
             ))}
           </nav>
+          <span aria-hidden className={`cat-fade cat-fade-left ${catScrolled ? "" : "hidden"}`} />
           <span aria-hidden className="cat-fade" />
         </div>
       </header>}

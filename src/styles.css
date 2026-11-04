@@ -171,6 +171,7 @@ body { isolation: isolate; }
 .panel-row:hover { filter: brightness(1.08); }
 .cat-bar { display: flex; align-items: center; gap: 8px; width: 100%; overflow-x: auto; padding: 2px 4px 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .cat-fade { position: absolute; inset: 0 0 10px auto; width: 34px; pointer-events: none; background: linear-gradient(90deg, transparent, var(--background) 78%); }
+.cat-fade-left { inset: 0 auto 10px 0; background: linear-gradient(270deg, transparent, var(--background) 78%); }
 .cat-bar::-webkit-scrollbar { display: none; }
 .cat-pill { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; padding: 8px 15px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--card-foreground); font-family: var(--font-display); font-weight: 600; font-size: 13px; line-height: 1; white-space: nowrap; box-shadow: 0 0 10px -5px var(--glow); transition: transform 150ms, box-shadow 150ms, background 150ms, color 150ms; }
 .cat-pill:hover { transform: translateY(-1px); box-shadow: 0 0 16px -2px var(--glow); }
