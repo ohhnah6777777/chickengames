@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { gameUrl, isTrending, pretty, tagsFor, TRENDING, type Game } from "@/lib/game-utils";
+import { CATEGORIES, gameUrl, isTrending, pretty, tagsFor, TRENDING, type Game } from "@/lib/game-utils";
+import gamesData from "@/lib/games.json";
 
 describe("game utils", () => {
   it("pretty-prints ids", () => {
@@ -29,5 +30,38 @@ describe("game utils", () => {
 describe("genizymath games", () => {
   it("route through the gz save wrapper", () => {
     expect(gameUrl({ id: "x", icon: false, src: "gz", file: "653-fix2.html" })).toBe("/play/gz/653-fix2.html");
+  });
+});
+
+describe("category pills", () => {
+  const games = gamesData as { id: string }[];
+
+  it("tags shooters and 2-player games", () => {
+    expect(tagsFor("time-shooter-3-swat")).toContain("Shooter");
+    expect(tagsFor("getaway-shootout")).toContain("Shooter");
+    expect(tagsFor("fireboy-and-watergirl")).toContain("2-Player");
+    expect(tagsFor("1v1lol")).toContain("2-Player");
+    expect(tagsFor("slope-2-player")).toContain("2-Player");
+  });
+
+  it("does not tag look-alike names as 2-player", () => {
+    expect(tagsFor("papas-scooperia")).not.toContain("2-Player");
+    expect(tagsFor("chess")).not.toContain("2-Player");
+  });
+
+  it("every pill has games to show", () => {
+    for (const c of CATEGORIES) {
+      const n = games.filter((g) => tagsFor(g.id).includes(c.tag)).length;
+      expect(n, `${c.tag} should have at least 5 games`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it("uses the requested emoji labels", () => {
+    const byTag = Object.fromEntries(CATEGORIES.map((c) => [c.tag, c.emoji]));
+    expect(byTag["Arcade"]).toBe("🕹️");
+    expect(byTag["Racing"]).toBe("🏎️");
+    expect(byTag["Puzzle"]).toBe("🧩");
+    expect(byTag["Shooter"]).toBe("🔫");
+    expect(byTag["2-Player"]).toBe("👥");
   });
 });
