@@ -122,14 +122,17 @@ function Index() {
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Search filters" onClick={() => setPanel("search")}><Search className="size-4" /></Button>
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Account" onClick={() => setPanel("account")}><User className="size-4" /></Button>
         </div>
-        <nav aria-label="Game categories" className="cat-bar">
-          <button type="button" aria-pressed={!tag} onClick={() => setTag(null)} className={`cat-pill ${!tag ? "is-active" : ""}`}><span aria-hidden>✨</span>All</button>
-          {CATEGORIES.map((c) => (
-            <button key={c.tag} type="button" aria-pressed={tag === c.tag} title={`${c.label} games`} onClick={() => setTag(tag === c.tag ? null : c.tag)} className={`cat-pill ${tag === c.tag ? "is-active" : ""}`}>
-              <span aria-hidden>{c.emoji}</span>{c.label}
-            </button>
-          ))}
-        </nav>
+        <div className="relative w-full max-w-[56rem]">
+          <nav aria-label="Game categories" className="cat-bar">
+            <button type="button" aria-pressed={!tag} onClick={() => setTag(null)} className={`cat-pill ${!tag ? "is-active" : ""}`}><span aria-hidden>✨</span>All</button>
+            {CATEGORIES.map((c) => (
+              <button key={c.tag} type="button" aria-pressed={tag === c.tag} title={`${c.label} games`} onClick={() => setTag(tag === c.tag ? null : c.tag)} className={`cat-pill ${tag === c.tag ? "is-active" : ""}`}>
+                <span aria-hidden>{c.emoji}</span>{c.label}
+              </button>
+            ))}
+          </nav>
+          <span aria-hidden className="cat-fade" />
+        </div>
       </header>}
 
       {/* Full-page search that drops from the top */}
