@@ -14,7 +14,25 @@ const TAG_RULES: [RegExp, string][] = [
   [/minecraft|block|craft|sandbox|terraria|survival/i, "Sandbox"],
   [/papa-|jacksmith|pou|duck-life|learn-to-fly|snail-bob|wheely|cut-the-rope|angry-birds|bad-piggies/i, "Strategy"],
   [/io\b|\.io|agar|hole-io|paper-io|snowball|yohoho|territorial|state-io|cleanup-io|ducklings/i, "IO"],
+  [/shoot|gun|sniper|tanks?|arena|battle[-_]royale|zombie|archer|bow|cannon|bomb|laser|flame|swat|quake/i, "Shooter"],
+  [/2[-_ ]?player|two[-_ ]?player|\bco[-_]?op\b|multiplayer|1v1|\bduo\b|duel|fireboy|watergirl|joust|ping[-_ ]?pong|bomberman|volley-random|basket-random|soccer-random|sports-heads/i, "2-Player"],
 ];
+
+// Home-page category pills: emoji + label, mapped to the tag they filter by.
+export const CATEGORIES: { tag: string; emoji: string; label: string }[] = [
+  { tag: "Arcade", emoji: "🕹️", label: "Arcade" },
+  { tag: "Racing", emoji: "🏎️", label: "Racing" },
+  { tag: "Puzzle", emoji: "🧩", label: "Puzzle" },
+  { tag: "Shooter", emoji: "🔫", label: "Shooter" },
+  { tag: "2-Player", emoji: "👥", label: "2-Player" },
+  { tag: "Sports", emoji: "⚽", label: "Sports" },
+  { tag: "Idle", emoji: "🪙", label: "Idle" },
+  { tag: "Horror", emoji: "👻", label: "Horror" },
+  { tag: "Sandbox", emoji: "🧱", label: "Sandbox" },
+  { tag: "Strategy", emoji: "🧠", label: "Strategy" },
+  { tag: "IO", emoji: "🌐", label: "IO" },
+];
+
 
 export function tagsFor(id: string): string[] {
   const tags = TAG_RULES.filter(([re]) => re.test(id)).map(([, t]) => t);

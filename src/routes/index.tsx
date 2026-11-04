@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CommentBox, ReportButton } from "@/components/game-social";
 import { useEffect, useRef, useState } from "react";
 import gamesData from "@/lib/games.json";
-import { gameInfo, gameUrl, isTrending, pretty, tagsFor, type Game } from "@/lib/game-utils";
+import { CATEGORIES, gameInfo, gameUrl, isTrending, pretty, tagsFor, type Game } from "@/lib/game-utils";
 import { ArrowLeft, ChevronRight, Clock, Flame, Heart, Info, Maximize, RotateCw, Search, Settings, Shuffle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/components/account-menu";
@@ -27,7 +27,6 @@ export const Route = createFileRoute("/")({
 const games = gamesData as Game[];
 const byId = new Map(games.map((g) => [g.id, g]));
 const iconSrc = (g: Game) => (g.src === "gh" ? `/icons-o/${g.id}.webp` : g.src === "gz" ? `/icons-z/${g.id}.webp` : `/icons/${g.id}.webp`);
-const FILTER_TAGS = ["Arcade", "Puzzle", "Racing", "Sports", "Action", "Idle", "Horror", "Sandbox", "Strategy", "IO"];
 const TOP = ["slope", "minecraft", "retro-bowl", "basketball-stars", "cookie-clicker", "subway-surfers", "run-3", "geometry-dash", "drive-mad", "1v1-lol"];
 // Every Nth tile in the mosaic is shown bigger, like the reference layout.
 const sizeFor = (i: number) => (i === 1 || i % 37 === 9 ? "huge" : i % 11 === 4 ? "big" : "");
@@ -69,6 +68,7 @@ function Index() {
   const [tag, setTag] = useState<string | null>(null);
   const [view, setView] = useState<"all" | "liked" | "recent">("all");
   const [panel, setPanel] = useState<Panel>(null);
+  const [catScrolled, setCatScrolled] = useState(false);
   const [playing, setPlaying] = useState<string | null>(null);
   const { likes, toggle, error } = useLikes();
   const [recent, saveRecent] = useLocalList("cg-recent");
@@ -123,6 +123,18 @@ function Index() {
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Search filters" onClick={() => setPanel("search")}><Search className="size-4" /></Button>
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Account" onClick={() => setPanel("account")}><User className="size-4" /></Button>
         </div>
+        <div className="relative w-full max-w-[56rem]">
+          <nav aria-label="Game categories" className="cat-bar" onScroll={(e) => setCatScrolled(e.currentTarget.scrollLeft > 4)}>
+            <button type="button" aria-pressed={!tag} onClick={() => setTag(null)} className={`cat-pill ${!tag ? "is-active" : ""}`}><span aria-hidden>✨</span>All</button>
+            {CATEGORIES.map((c) => (
+              <button key={c.tag} type="button" aria-pressed={tag === c.tag} title={`${c.label} games`} onClick={() => setTag(tag === c.tag ? null : c.tag)} className={`cat-pill ${tag === c.tag ? "is-active" : ""}`}>
+                <span aria-hidden>{c.emoji}</span>{c.label}
+              </button>
+            ))}
+          </nav>
+          <span aria-hidden className={`cat-fade cat-fade-left ${catScrolled ? "" : "hidden"}`} />
+          <span aria-hidden className="cat-fade" />
+        </div>
       </header>}
 
       {/* Full-page search that drops from the top */}
@@ -140,7 +152,7 @@ function Index() {
             <Search className="size-5" />
           </label>
           <div className="flex flex-wrap gap-2">
-            {FILTER_TAGS.map((t) => <button key={t} type="button" onClick={() => { setTag(tag === t ? null : t); setPlaying(null); }} className={`rounded-md px-4 py-2 text-xs font-extrabold uppercase ${tag === t ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{t}</button>)}
+            {CATEGORIES.map((c) => <button key={c.tag} type="button" onClick={() => { setTag(tag === c.tag ? null : c.tag); setPlaying(null); }} className={`rounded-md px-4 py-2 text-xs font-extrabold uppercase ${tag === c.tag ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{c.emoji} {c.label}</button>)}
           </div>
           <div className="grid gap-1.5 rounded-xl bg-card p-3">
             {["1234567890", "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"].map((r) => <div key={r} className="flex justify-center gap-1.5">{r.split("").map((k) => <button key={k} type="button" onClick={() => { setQ(q + k.toLowerCase()); setPlaying(null); }} className="h-10 min-w-0 flex-1 max-w-14 rounded-md bg-secondary font-bold text-secondary-foreground hover:ring-2 hover:ring-primary">{k}</button>)}</div>)}
