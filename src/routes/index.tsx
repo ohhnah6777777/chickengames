@@ -83,6 +83,17 @@ function Index() {
     window.scrollTo({ top: 0 });
   };
   const playingGame = playing ? byId.get(playing) : undefined;
+  const [warp, setWarp] = useState(false);
+  const surprise = () => {
+    if (warp) return;
+    const pool = games.filter((g) => g.id !== playing);
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    if (!pick) return;
+    setWarp(true);
+    setTimeout(() => start(pick.id), 380);
+    setTimeout(() => setWarp(false), 800);
+  };
+  const more = useMemo(() => (playing ? relatedGames(playing, recent, games, 46) : []), [playing]);
   const top = TOP.flatMap((id) => byId.get(id) ?? []);
   const base = view === "liked" ? games.filter((g) => likes.includes(g.id)) : view === "recent" ? recent.flatMap((id) => byId.get(id) ?? []) : games;
   const list = base.filter((g) => (!tag || tagsFor(g.id).includes(tag)) && pretty(g.id).toLowerCase().includes(q.toLowerCase()));
@@ -122,6 +133,7 @@ function Index() {
           </label>
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Search filters" onClick={() => setPanel("search")}><Search className="size-4" /></Button>
           <Button variant="secondary" size="icon" className="size-10 rounded-full" aria-label="Account" onClick={() => setPanel("account")}><User className="size-4" /></Button>
+          <Button className="surprise-btn h-10 rounded-full px-4 font-display font-bold" aria-label="Surprise me with a random game" onClick={surprise}><span aria-hidden className="text-lg">🎲</span><span className="max-sm:hidden">Surprise Me!</span></Button>
         </div>
         <div className="relative w-full max-w-[56rem]">
           <nav aria-label="Game categories" className="cat-bar" onScroll={(e) => setCatScrolled(e.currentTarget.scrollLeft > 4)}>
@@ -191,7 +203,9 @@ function Index() {
       {error && <p role="status" className="fixed bottom-3 left-1/2 z-50 -translate-x-1/2 rounded-full bg-secondary px-4 py-2 text-sm text-secondary-foreground">{error}</p>}
 
       {playing && playingGame ? (
-        <main className="mx-auto max-w-6xl px-3 pb-10 pt-3">
+        <main className="mx-auto flex max-w-[1600px] gap-3 px-3 pb-10 pt-3">
+          <aside aria-label="More games" className="side-rail">{more.slice(0, 8).map((g, i) => tile(g, i))}</aside>
+          <div className="min-w-0 flex-1">
           <div ref={player} className="flex aspect-video min-h-[340px] flex-col overflow-hidden rounded-2xl bg-card shadow-xl max-sm:h-[65dvh]">
             <iframe key={`${playing}-${reload}`} src={gameUrl(playingGame)} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
           </div>
@@ -200,6 +214,7 @@ function Index() {
             <h1 className="mr-auto min-w-0 break-words font-display text-xl font-bold">{pretty(playing)}</h1>
             <Button variant="ghost" size="icon" aria-label={likes.includes(playing) ? "Unlike game" : "Like game"} onClick={() => toggle(playing)}><Heart fill={likes.includes(playing) ? "currentColor" : "none"} /></Button>
             <ReportButton gameId={playing} />
+            <Button variant="ghost" size="icon" aria-label="Surprise me with a random game" onClick={surprise}><span aria-hidden className="text-lg">🎲</span></Button>
             <Button variant="ghost" size="icon" aria-label="Reload game" onClick={() => setReload((n) => n + 1)}><RotateCw /></Button>
             <Button size="icon" className="bg-card text-foreground hover:bg-card/90" aria-label="Fullscreen" onClick={() => { void player.current?.requestFullscreen().catch(() => setPlayerError("Fullscreen is not available in this browser.")); }}><Maximize /></Button>
           </div>
@@ -213,7 +228,9 @@ function Index() {
           </div>
           <CommentBox gameId={playing} />
           <h2 className="mb-2 mt-6 font-display text-lg font-bold">More games</h2>
-          <div className="game-grid">{games.filter((g) => g.id !== playing).slice(0, 30).map((g, i) => tile(g, i))}</div>
+          <div className="game-grid">{more.slice(16).map((g, i) => tile(g, i))}</div>
+          </div>
+          <aside aria-label="More games" className="side-rail">{more.slice(8, 16).map((g, i) => tile(g, i))}</aside>
         </main>
       ) : (
         <main>
@@ -234,6 +251,7 @@ function Index() {
           )}
         </main>
       )}
+      {warp && <div aria-hidden className="warp-overlay"><span>🎲</span></div>}
       <SiteFooter count={games.length} />
     </div>
   );

@@ -1,3 +1,4 @@
+import DESCRIPTIONS from "./descriptions.json";
 export type Game = { id: string; icon: boolean; src?: "gh" | "gz"; file?: string };
 
 export const pretty = (s: string) =>
@@ -55,6 +56,21 @@ export function gameUrl(game: Game): string {
 }
 
 export function gameInfo(game: Game): string {
+  const real = (DESCRIPTIONS as Record<string, string>)[game.id];
+  if (real) return real;
   const tags = tagsFor(game.id).join(", ").toLowerCase();
   return `${pretty(game.id)} is a free ${tags} game you can play right in your browser — no downloads, no installs. Your progress is saved automatically on this device, so you can pick up where you left off.`;
+}
+
+// "More games": shuffled picks that share tags with the current game and recently played ones.
+export function relatedGames(current: string, recent: string[], all: Game[], count: number, rand: () => number = Math.random): Game[] {
+  const want = new Map<string, number>();
+  tagsFor(current).forEach((t) => want.set(t, (want.get(t) ?? 0) + 3));
+  recent.slice(0, 8).forEach((id) => tagsFor(id).forEach((t) => want.set(t, (want.get(t) ?? 0) + 1)));
+  return all
+    .filter((g) => g.id !== current)
+    .map((g) => ({ g, s: tagsFor(g.id).reduce((n, t) => n + (want.get(t) ?? 0), 0) + rand() * 4 }))
+    .sort((a, b) => b.s - a.s)
+    .slice(0, count)
+    .map((x) => x.g);
 }
