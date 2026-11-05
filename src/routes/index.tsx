@@ -124,7 +124,7 @@ function Index() {
       {!playing && <header className="flex flex-col items-center gap-3 px-4 pb-2 pt-6">
         <button type="button" className="flex items-center gap-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Kootz Games home">
           <img src="/kootz-logo.png" alt="" width={1280} height={640} className="h-12 w-auto object-contain drop-shadow-[0_0_12px_var(--glow)] sm:h-14" />
-          <span className="brand-title text-4xl sm:text-5xl">Kootz <span className="text-primary [-webkit-text-fill-color:currentColor]">Games</span></span>
+          <span className="brand-title text-4xl sm:text-5xl" style={{ backgroundImage: "none", filter: "none", textShadow: "0 0 14px var(--glow)" }}><span className="glass-word">Kootz</span> <span className="text-primary [-webkit-text-fill-color:currentColor]">Games</span></span>
         </button>
         <div className="flex w-full max-w-xl items-center gap-2">
           <label className="flex flex-1 items-center gap-3 rounded-full border border-border bg-card px-4 py-2.5">
