@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage } from "@/components/legal-page";
 export const Route = createFileRoute("/privacy")({
-  head: () => ({ meta: [{ title: "Privacy Policy — Blues Games" }, { name: "description", content: "How Blues Games handles accounts, comments, likes, play history and AI recommendations." }, { property: "og:title", content: "Privacy Policy — Blues Games" }, { property: "og:description", content: "How Blues Games handles your data." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Privacy Policy — Kootz Games" }, { name: "description", content: "How Kootz Games handles accounts, comments, likes, play history and AI recommendations." }, { property: "og:title", content: "Privacy Policy — Kootz Games" }, { property: "og:description", content: "How Kootz Games handles your data." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: () => <LegalPage title="Privacy Policy" sections={[
     ["Accounts", "You can play every game without an account. If you sign up, we store your email address, display name and account preferences so you can sign in and keep your likes. You can change your display name or sign out from your profile page at any time."],
     ["Comments", "Comments you post are public. We store the comment text, your display name, the game it belongs to and when it was posted. You can delete your own comments at any time."],

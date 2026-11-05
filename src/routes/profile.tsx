@@ -10,10 +10,10 @@ import { AccountMenu } from "@/components/account-menu";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Your Profile — Blues Games" },
-      { name: "description", content: "Your Blues Games profile: name, liked games and recently played." },
-      { property: "og:title", content: "Your Profile — Blues Games" },
-      { property: "og:description", content: "Your Blues Games profile: name, liked games and recently played." },
+      { title: "Your Profile — Kootz Games" },
+      { name: "description", content: "Your Kootz Games profile: name, liked games and recently played." },
+      { property: "og:title", content: "Your Profile — Kootz Games" },
+      { property: "og:description", content: "Your Kootz Games profile: name, liked games and recently played." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
