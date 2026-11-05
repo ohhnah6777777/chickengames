@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CommentBox, ReportButton } from "@/components/game-social";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import gamesData from "@/lib/games.json";
-import { CATEGORIES, gameInfo, gameUrl, isTrending, pretty, tagsFor, type Game } from "@/lib/game-utils";
+import { CATEGORIES, gameInfo, gameUrl, isTrending, pretty, relatedGames, tagsFor, type Game } from "@/lib/game-utils";
 import { ArrowLeft, ChevronRight, Clock, Flame, Heart, Info, Maximize, RotateCw, Search, Settings, Shuffle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/components/account-menu";

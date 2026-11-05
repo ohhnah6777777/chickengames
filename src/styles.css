@@ -191,3 +191,21 @@ body { isolation: isolate; }
   color: transparent;
   filter: drop-shadow(0 0 14px var(--glow));
 }
+
+/* Surprise Me button + warp transition */
+.surprise-btn { gap: .4rem; box-shadow: 0 0 18px color-mix(in oklab, var(--primary) 55%, transparent); }
+.surprise-btn:hover span[aria-hidden] { animation: dice-spin .5s ease; }
+@keyframes dice-spin { to { transform: rotate(360deg); } }
+.warp-overlay { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 35%, transparent), var(--background) 70%);
+  animation: warp .8s ease forwards; }
+.warp-overlay span { font-size: 5rem; animation: dice-spin .4s linear 2; }
+@keyframes warp { 0% { opacity: 0; transform: scale(1.2); } 35%,55% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .warp-overlay, .warp-overlay span { animation-duration: .01s; } }
+
+/* Game side rails while playing (wide screens only) */
+.side-rail { display: none; }
+@media (min-width: 1280px) {
+  .side-rail { display: flex; flex-direction: column; gap: .6rem; width: 120px; flex-shrink: 0; }
+  .side-rail .game-tile { aspect-ratio: 1; }
+}
