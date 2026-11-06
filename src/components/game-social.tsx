@@ -1,11 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Flag, MessageCircle, Send, Trash2 } from "lucide-react";
+import { Flag, MessageCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/components/account-provider";
-import { AccountMenu } from "@/components/account-menu";
 
 const REASONS = ["Not loading", "Broken or glitchy", "Inappropriate", "Other"] as const;
 
@@ -41,7 +40,7 @@ export function ReportButton({ gameId }: { gameId: string }) {
 }
 
 export function CommentBox({ gameId }: { gameId: string }) {
-  const { user, profile } = useAccount();
+  const { profile } = useAccount();
   const qc = useQueryClient();
   const [body, setBody] = useState("");
   const [msg, setMsg] = useState("");
@@ -58,30 +57,19 @@ export function CommentBox({ gameId }: { gameId: string }) {
     mutationFn: async () => {
       const text = body.trim();
       if (!text) throw new Error("Write something first.");
-      const { error } = await supabase.from("game_comments").insert({ game_id: gameId, body: text, display_name: profile?.display_name || "Player" });
+      const { error } = await supabase.from("game_comments").insert({ game_id: gameId, body: text, display_name: profile.display_name || "Player" });
       if (error) throw error;
     },
     onSuccess: () => { setBody(""); setMsg(""); void qc.invalidateQueries({ queryKey: key }); },
     onError: (e) => setMsg(e instanceof Error ? e.message : "Could not post your comment."),
   });
-  const remove = async (id: string) => {
-    const { error } = await supabase.from("game_comments").delete().eq("id", id);
-    if (error) setMsg("Could not delete the comment."); else void qc.invalidateQueries({ queryKey: key });
-  };
   return (
     <section className="mt-3 rounded-2xl bg-card p-4" aria-label="Comments">
       <div className="mb-3 flex items-center gap-2"><MessageCircle className="size-4 text-primary" /><h2 className="text-sm font-bold">Comments ({comments.length})</h2></div>
-      {user ? (
-        <form onSubmit={e => { e.preventDefault(); post.mutate(); }} className="flex items-end gap-2">
-          <textarea aria-label="Write a comment" className="account-input min-h-12 flex-1 resize-y text-sm" maxLength={500} placeholder="Say something about this game…" value={body} onChange={e => setBody(e.target.value)} />
-          <Button type="submit" disabled={post.isPending || !body.trim()}><Send />Comment</Button>
-        </form>
-      ) : (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-secondary/10 p-3 text-sm">
-          <span>Log in to leave a comment.</span>
-          <AccountMenu className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground">Log in / Sign up</AccountMenu>
-        </div>
-      )}
+      <form onSubmit={e => { e.preventDefault(); post.mutate(); }} className="flex items-end gap-2">
+        <textarea aria-label="Write a comment" className="account-input min-h-12 flex-1 resize-y text-sm" maxLength={500} placeholder={`Comment as ${profile.display_name}…`} value={body} onChange={e => setBody(e.target.value)} />
+        <Button type="submit" disabled={post.isPending || !body.trim()}><Send />Comment</Button>
+      </form>
       {msg && <p role="status" className="mt-2 text-sm">{msg}</p>}
       <ul className="mt-4 grid gap-3">
         {isLoading && <li className="text-sm text-muted-foreground">Loading comments…</li>}
@@ -89,7 +77,6 @@ export function CommentBox({ gameId }: { gameId: string }) {
         {comments.map(c => (
           <li key={c.id} className="rounded-xl bg-background/40 p-3">
             <div className="mb-1 flex items-center gap-2 text-xs"><span className="font-bold">{c.display_name}</span><span className="text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</span>
-              {user?.id === c.user_id && <button type="button" aria-label="Delete comment" className="ml-auto opacity-70 hover:opacity-100" onClick={() => void remove(c.id)}><Trash2 className="size-3.5" /></button>}
             </div>
             <p className="whitespace-pre-wrap break-words text-sm">{c.body}</p>
           </li>
