@@ -5,7 +5,6 @@ import gamesData from "@/lib/games.json";
 import { CATEGORIES, gameInfo, gameUrl, isTrending, pretty, relatedGames, tagsFor, type Game } from "@/lib/game-utils";
 import { ArrowLeft, ChevronRight, Clock, Flame, Heart, Info, Maximize, RotateCw, Search, Settings, Shuffle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AccountMenu } from "@/components/account-menu";
 import { useAccount } from "@/components/account-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { Suggestions } from "@/components/suggestions";
@@ -48,15 +47,13 @@ function useLocalList(key: string) {
 }
 
 function useLikes() {
-  const { user, profile, saveProfile } = useAccount();
-  const [localLikes, saveLocal] = useLocalList("cg-likes");
+  const { profile, saveProfile } = useAccount();
   const [error, setError] = useState("");
-  const likes = user ? profile?.liked_games ?? [] : localLikes;
+  const likes = profile.liked_games;
   const toggle = (id: string) => {
     const next = likes.includes(id) ? likes.filter((x) => x !== id) : [...likes, id];
     setError("");
-    if (user) void saveProfile({ liked_games: next }).catch(() => setError("Could not save your like. Please try again."));
-    else saveLocal(next);
+    void saveProfile({ liked_games: next }).catch(() => setError("Could not save your like. Please try again."));
   };
   return { likes, toggle, error };
 }
@@ -71,11 +68,11 @@ function Index() {
   const [catScrolled, setCatScrolled] = useState(false);
   const [playing, setPlaying] = useState<string | null>(null);
   const { likes, toggle, error } = useLikes();
+  const { profile } = useAccount();
   const [recent, saveRecent] = useLocalList("cg-recent");
   const player = useRef<HTMLDivElement>(null);
   const [reload, setReload] = useState(0);
   const [playerError, setPlayerError] = useState("");
-  const { user, profile } = useAccount();
 
   const start = (id: string) => {
     setPlaying(id); setPanel(null); setPlayerError("");
@@ -124,7 +121,7 @@ function Index() {
       {!playing && <header className="flex flex-col items-center gap-3 px-4 pb-2 pt-6">
         <button type="button" className="flex items-center gap-2" onClick={() => { setPlaying(null); setView("all"); setQ(""); setTag(null); setPanel(null); }} aria-label="Kootz Games home">
           <img src="/kootz-logo.png" alt="" width={1280} height={640} className="h-12 w-auto object-contain drop-shadow-[0_0_12px_var(--glow)] sm:h-14" />
-          <span className="brand-title text-4xl sm:text-5xl" style={{ backgroundImage: "none", filter: "none", textShadow: "0 0 14px var(--glow)" }}><span className="glass-word">Kootz</span> <span className="text-primary [-webkit-text-fill-color:currentColor]">Games</span></span>
+          <span className="brand-title text-4xl sm:text-5xl" style={{ backgroundImage: "none", filter: "none", textShadow: "0 0 14px var(--glow)" }}><span className="glass-word">Kootz</span> <span className="text-foreground [-webkit-text-fill-color:currentColor]">Games</span></span>
         </button>
         <div className="flex w-full max-w-xl items-center gap-2">
           <label className="flex flex-1 items-center gap-3 rounded-full border border-border bg-card px-4 py-2.5">
@@ -184,10 +181,9 @@ function Index() {
           {panel === "account" && <>
             <div className="flex items-center gap-3 rounded-2xl bg-secondary p-4 text-secondary-foreground">
               <img src="/mascot-thumbs.webp" alt="" width={56} height={56} className="size-14 object-contain" />
-              <div className="min-w-0"><p className="font-bold">{user ? profile?.display_name ?? "Player" : "Local player"}</p><p className="text-xs opacity-70">{user ? "Your likes are saved to your account." : "Local account · not saved to an account"}</p></div>
+              <div className="min-w-0"><p className="font-bold">{profile.display_name}</p><p className="text-xs opacity-70">Local account · saved in this browser only</p></div>
             </div>
             <Link to="/profile" className="panel-row"><span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground"><User className="size-4" /></span><span className="flex-1">Profile</span><ChevronRight className="size-4" /></Link>
-            <AccountMenu className="panel-row"><span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground"><User className="size-4" /></span><span className="flex-1">{user ? "Account settings" : "Log in / Sign up"}</span><ChevronRight className="size-4" /></AccountMenu>
             {row(<Heart className="size-4" />, `Liked games (${likes.length})`, () => { setView("liked"); setPlaying(null); setPanel(null); })}
             {row(<Clock className="size-4" />, "Recently played", () => { setView("recent"); setPlaying(null); setPanel(null); })}
             {row(<Shuffle className="size-4" />, "Random game", () => start(games[Math.floor(Math.random() * games.length)]?.id ?? "2048"))}
@@ -204,7 +200,7 @@ function Index() {
 
       {playing && playingGame ? (
         <main className="mx-auto flex max-w-[1600px] gap-3 px-3 pb-10 pt-3">
-          <aside aria-label="More games" className="side-rail">{more.slice(0, 8).map((g, i) => tile(g, i))}</aside>
+          <aside aria-label="More games" className="side-rail">{more.slice(0, 18).map((g, i) => tile(g, i))}</aside>
           <div className="min-w-0 flex-1">
           <div ref={player} className="flex aspect-video min-h-[340px] flex-col overflow-hidden rounded-2xl bg-card shadow-xl max-sm:h-[65dvh]">
             <iframe key={`${playing}-${reload}`} src={gameUrl(playingGame)} title={pretty(playing)} className="min-h-0 w-full flex-1 border-0" allow="fullscreen; autoplay; gamepad" allowFullScreen />
@@ -228,9 +224,9 @@ function Index() {
           </div>
           <CommentBox gameId={playing} />
           <h2 className="mb-2 mt-6 font-display text-lg font-bold">More games</h2>
-          <div className="game-grid">{more.slice(16).map((g, i) => tile(g, i))}</div>
+          <div className="game-grid">{more.slice(36).map((g, i) => tile(g, i))}</div>
           </div>
-          <aside aria-label="More games" className="side-rail">{more.slice(8, 16).map((g, i) => tile(g, i))}</aside>
+          <aside aria-label="More games" className="side-rail">{more.slice(18, 36).map((g, i) => tile(g, i))}</aside>
         </main>
       ) : (
         <main>

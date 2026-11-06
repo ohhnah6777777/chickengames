@@ -75,8 +75,8 @@
   --card-foreground: var(--foreground);
   --popover: oklch(0.2 0.03 260);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.89 0.18 98);
-  --primary-foreground: oklch(0.25 0.05 255);
+  --primary: oklch(0.23 0.02 260);
+  --primary-foreground: oklch(0.96 0.01 250);
   --secondary: oklch(0.27 0.04 260);
   --secondary-foreground: oklch(0.96 0.01 250);
   --muted: oklch(0.24 0.03 260);
@@ -203,9 +203,31 @@ body { isolation: isolate; }
 @keyframes warp { 0% { opacity: 0; transform: scale(1.2); } 35%,55% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .warp-overlay, .warp-overlay span { animation-duration: .01s; } }
 
-/* Game side rails while playing (wide screens only) */
+/* Frosted-glass "Kootz" wordmark: transparent letters that blur whatever sits behind them */
+.glass-word {
+  position: relative;
+  color: oklch(1 0 0 / 0.28);
+  -webkit-text-fill-color: oklch(1 0 0 / 0.28);
+  text-shadow: 0 0 16px var(--glow);
+}
+.glass-word::before {
+  content: "";
+  position: absolute;
+  inset: -3px -5px;
+  backdrop-filter: blur(9px) saturate(150%);
+  mask-image: url("/kootz-mask.png");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  pointer-events: none;
+}
+
+/* Game side rails while playing (wide screens only): 2-3 columns of tiles */
 .side-rail { display: none; }
 @media (min-width: 1280px) {
-  .side-rail { display: flex; flex-direction: column; gap: .6rem; width: 120px; flex-shrink: 0; }
+  .side-rail { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; width: 240px; flex-shrink: 0; align-content: start; }
   .side-rail .game-tile { aspect-ratio: 1; }
+}
+@media (min-width: 1720px) {
+  .side-rail { grid-template-columns: repeat(3, 1fr); width: 370px; }
 }

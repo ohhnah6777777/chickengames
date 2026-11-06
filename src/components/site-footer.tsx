@@ -11,8 +11,8 @@ export function SiteFooter({ count }: { count: number }) {
           Kootz Games hosts {rounded}+ browser games, plays instantly with no downloads, saves your progress automatically, and suggests new games based on what you've played — so you can jump right in from any computer, including your school Chromebook.
         </p>
         <nav className="flex gap-6 pt-2 font-display text-lg font-bold">
-          <Link to="/terms" className="text-primary drop-shadow-[0_0_10px_var(--glow)] hover:underline">Terms of Service</Link>
-          <Link to="/privacy" className="text-primary drop-shadow-[0_0_10px_var(--glow)] hover:underline">Privacy Policy</Link>
+          <Link to="/terms" className="text-foreground drop-shadow-[0_0_10px_var(--glow)] hover:underline">Terms of Service</Link>
+          <Link to="/privacy" className="text-foreground drop-shadow-[0_0_10px_var(--glow)] hover:underline">Privacy Policy</Link>
         </nav>
       </div>
       <div className="border-t border-border py-6 text-center text-sm text-muted-foreground">© {new Date().getFullYear()} Kootz Games. All rights reserved.</div>
