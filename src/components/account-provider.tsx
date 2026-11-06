@@ -13,7 +13,7 @@ function load(): Profile {
     if (v && typeof v === 'object') {
       return {
         display_name: typeof v.display_name === 'string' && v.display_name.trim() ? v.display_name : 'Player',
-        liked_games: Array.isArray(v.liked_games) ? v.liked_games.filter((x) => typeof x === 'string') : [],
+        liked_games: Array.isArray(v.liked_games) ? (v.liked_games as unknown[]).filter((x): x is string => typeof x === 'string') : [],
       };
     }
   } catch { /* ignore */ }
